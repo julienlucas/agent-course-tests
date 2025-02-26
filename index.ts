@@ -5,12 +5,17 @@ dotenv.config();
 
 const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
 
-let result = await textGeneration({
+const prompt = `
+  <|begin_of_text|><|start_header_id|>user<|end_header_id|>
+  The capital of France is<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+`;
+
+let output = await textGeneration({
   accessToken: HF_ACCESS_TOKEN,
-  model: "gpt2",
-  inputs: "The capital of France is",
+  model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+  inputs: prompt,
+  stream: false,
   max_new_tokens: 100,
 });
 
-console.log(result);
-/* { generated_text: 'The answer to the universe is not to be found in the universe itself, but in the universe itself' } */
+console.log(output);
