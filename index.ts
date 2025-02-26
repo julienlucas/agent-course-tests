@@ -6,9 +6,10 @@ dotenv.config();
 const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
 
 let result = await textGeneration({
-    accessToken: HF_ACCESS_TOKEN,
-    model: 'gpt2',
-    inputs: 'The answer to the universe is',
+  accessToken: HF_ACCESS_TOKEN,
+  model: "gpt2",
+  inputs: "The capital of France is",
+  max_new_tokens: 100,
 });
 
 console.log(result);
