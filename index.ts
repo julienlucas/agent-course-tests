@@ -7,7 +7,7 @@ const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
 
 const prompt = `
   <|begin_of_text|><|start_header_id|>user<|end_header_id|>
-  The capital of France is<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+  La capitale de la France est<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 `;
 
 let output = await textGeneration({
