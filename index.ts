@@ -1,6 +1,6 @@
-import { textGeneration, textGenerationStream, chatCompletion } from "@huggingface/inference";
-
+import { textGeneration, chatCompletion } from "@huggingface/inference";
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
