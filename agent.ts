@@ -23,7 +23,7 @@ const uppercaseTool: Tool = {
       throw new Error("Input must be a string");
     }
     return data.toUpperCase();
-  },
+  }
 };
 
 // pass it in the agent
@@ -33,7 +33,7 @@ const agent = new HfAgent(
   [uppercaseTool, ...defaultTools]
 );
 
-//// you can generate the code, inspect it and then run it
+// // you can generate the code, inspect it and then run it
 // const code = await agent.generateCode(
 //   "What is the capital of France?"
 // );
@@ -41,6 +41,6 @@ const agent = new HfAgent(
 // const messages = await agent.evaluateCode(code);
 // console.log(messages); // contains the data
 
-// or you can run the code directly, however you can't check that the code is safe to execute this way, use at your own risk.
-const messages = await agent.run("What is the capital of France?");
-console.log(messages);
+// // or you can run the code directly, however you can't check that the code is safe to execute this way, use at your own risk.
+// const messages = await agent.run("What is the capital of France?");
+// console.log(messages);

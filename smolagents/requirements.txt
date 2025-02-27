@@ -1,0 +1,4 @@
+requests
+duckduckgo_search
+markdownify
+smolagents

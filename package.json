@@ -2,7 +2,7 @@
   "name": "agent-ia",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "agent.ts",
   "type": "module",
   "scripts": {
     "start": "tsx agent.ts",
