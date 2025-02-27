@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/ruby,rails
 # Edit at https://www.toptal.com/developers/gitignore?templates=ruby,rails
 
+
+### Smolagents app ###
+smolagents/path
+
 ### Rails ###
 *.rbc
 capybara-*.html
