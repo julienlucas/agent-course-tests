@@ -1,18 +1,15 @@
-# import yaml
-# import os
-# from smolagents import GradioUI, CodeAgent, HfApiModel
-from huggingface_hub import login
-from smolagents import CodeAgent, tool, HfApiModel
+from smolagents import load_tool, ToolCallingAgent, CodeAgent, DuckDuckGoSearchTool, FinalAnswerTool, HfApiModel, Tool, tool, VisitWebpageTool
+from config.tracing import setup_tracing
+from config.push_to_hub import push_to_hub
 
-login()
+setup_tracing()
 
-# Tool to suggest a menu based on the occasion
 @tool
 def suggest_menu(occasion: str) -> str:
   """
   Suggests a menu based on the occasion.
   Args:
-      occasion: The type of occasion for the party.
+    occasion: The type of occasion for the party.
   """
   if occasion == "casual":
       return "Pizza, snacks, and drinks."
@@ -23,8 +20,87 @@ def suggest_menu(occasion: str) -> str:
   else:
       return "Custom menu for the butler."
 
-# Alfred, the butler, preparing the menu for the party
-agent = CodeAgent(tools=[suggest_menu], model=HfApiModel())
+@tool
+def catering_service_tool(query: str) -> str:
+  """
+  This tool returns the highest-rated catering service in Gotham City.
 
-# Preparing the menu for the party
-agent.run("Prepare a formal menu for the party.")
+  Args:
+    query: A search term for finding catering services.
+  """
+  # Example list of catering services and their ratings
+  services = {
+    "Gotham Catering Co.": 4.9,
+    "Wayne Manor Catering": 4.8,
+    "Gotham City Events": 4.7,
+  }
+
+  # Find the highest rated catering service (simulating search query filtering)
+  best_service = max(services, key=services.get)
+
+  return best_service
+
+class SuperheroPartyThemeTool(Tool):
+  name = "superhero_party_theme_generator"
+  description = """
+  This tool suggests creative superhero-themed party ideas based on a category.
+  It returns a unique party theme idea."""
+
+  inputs = {
+    "category": {
+      "type": "string",
+      "description": "The type of superhero party (e.g., 'classic heroes', 'villain masquerade', 'futuristic Gotham').",
+    }
+  }
+
+  output_type = "string"
+
+  def forward(self, category: str):
+    themes = {
+      "classic heroes": "Justice League Gala: Guests come dressed as their favorite DC heroes with themed cocktails like 'The Kryptonite Punch'.",
+      "villain masquerade": "Gotham Rogues' Ball: A mysterious masquerade where guests dress as classic Batman villains.",
+      "futuristic Gotham": "Neo-Gotham Night: A cyberpunk-style party inspired by Batman Beyond, with neon decorations and futuristic gadgets."
+    }
+
+    return themes.get(category.lower(), "Themed party idea not found. Try 'classic heroes', 'villain masquerade', or 'futuristic Gotham'.")
+
+
+# # Instantiate the tool & push to HF
+# party_theme_tool = SuperheroPartyThemeTool()
+# push_to_hub(party_theme_tool)
+
+
+party_theme_tool = SuperheroPartyThemeTool()
+agent = CodeAgent(
+  tools=[party_theme_tool],
+  model=HfApiModel()
+  # model=HfApiModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
+)
+
+# Run the agent to generate a party theme idea
+result = agent.run(
+  "What would be a good superhero party idea for a 'villain masquerade' theme?"
+)
+
+print(result)  # Output: "Gotham Rogues' Ball: A mysterious masquerade where guests dress as classic Batman villains."
+
+
+# Alfred, the butler, preparing the menu for the party
+# agent = CodeAgent(
+#   tools=[
+#     DuckDuckGoSearchTool(),
+#     VisitWebpageTool(),
+#     suggest_menu,
+#     catering_service_tool,
+#     SuperheroPartyThemeTool()
+#   ],
+#   model=HfApiModel(),
+#   max_steps=10,
+#   verbosity_level=2
+# )
+
+# agent.run("Give me the best playlist for a party at the Wayne's mansion. The party idea is a 'villain masquerade' theme")
+
+# agent = CodeAgent(tools=[], model=HfApiModel())
+# alfred_agent = agent.from_hub('sergiopaniego/AlfredAgent', trust_remote_code=True)
+# alfred_agent.run("Give me the best playlist for a party at Wayne's mansion. The party idea is a 'villain masquerade' theme")

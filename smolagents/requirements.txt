@@ -1,4 +1,11 @@
+os
+dotenv
+huggingface_hub
+opentelemetry
 requests
+langchain
+langchain-community
 duckduckgo_search
+google-search-results
 markdownify
 smolagents
