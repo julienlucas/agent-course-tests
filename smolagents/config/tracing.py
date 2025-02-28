@@ -1,5 +1,6 @@
 import os
 import base64
+from dotenv import load_dotenv
 
 from opentelemetry.sdk.trace import TracerProvider
 from openinference.instrumentation.smolagents import SmolagentsInstrumentor
@@ -7,8 +8,10 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 
 def setup_tracing():
-  LANGFUSE_PUBLIC_KEY="pk-lf-d47707c9-63e2-4353-a910-d857175b11e6"
-  LANGFUSE_SECRET_KEY="sk-lf-afcec8c0-8d47-4024-8984-97c2a8d0fcd0"
+  load_dotenv(override=True)
+
+  LANGFUSE_PUBLIC_KEY=os.getenv("LANGFUSE_PUBLIC_KEY")
+  LANGFUSE_SECRET_KEY=os.getenv("LANGFUSE_SECRET_KEY")
   LANGFUSE_ENDPOINT="https://cloud.langfuse.com/api/public/otel"
   LANGFUSE_AUTH=base64.b64encode(f"{LANGFUSE_PUBLIC_KEY}:{LANGFUSE_SECRET_KEY}".encode()).decode()
 
