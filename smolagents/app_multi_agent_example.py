@@ -5,8 +5,9 @@ from multi_agent.calculate_cargo_travel_time import calculate_cargo_travel_time
 
 load_dotenv(override=True)
 
-task = """Find all Batman filming locations in the world, calculate the time to transfer via cargo plane to here (we're in Gotham, 40.7128° N, 74.0060° W), and return them to me as a pandas dataframe.
-Also give me some supercar factories with the same cargo plane transfer time."""
+# task = """Find all Batman filming locations in the world, calculate the time to transfer via cargo plane to here (we're in Gotham, 40.7128° N, 74.0060° W), and return them to me as a pandas dataframe.
+# Also give me some supercar factories with the same cargo plane transfer time."""
+task = """Tu es un gamer. Tu joue aux jeux vidéo. Trouves-moi la soluce en ligne sur le livre de nécromentie ou nécromentien dans le jeu vidéo Baldur's Gate 3, et donnes-moi la solution pour déchifrer ce livre. Donnes-moi non pas une liste de liens, mais directement les étapes à suivre pour déchiffrer ce livre."""
 
 model = HfApiModel(model_id="Qwen/Qwen2.5-Coder-32B-Instruct", provider="together")
 
