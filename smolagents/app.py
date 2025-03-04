@@ -2,10 +2,6 @@ from smolagents import load_tool, ToolCallingAgent, CodeAgent, DuckDuckGoSearchT
 from config.tracing import setup_tracing
 from config.push_to_hub import push_to_hub
 
-from langchain.docstore.document import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.retrievers import BM25Retriever
-
 setup_tracing()
 
 @tool
@@ -16,13 +12,13 @@ def suggest_menu(occasion: str) -> str:
     occasion: The type of occasion for the party.
   """
   if occasion == "casual":
-      return "Pizza, snacks, and drinks."
+    return "Pizza, snacks, and drinks."
   elif occasion == "formal":
-      return "3-course dinner with wine and dessert."
+    return "3-course dinner with wine and dessert."
   elif occasion == "superhero":
-      return "Buffet with high-energy and healthy food."
+    return "Buffet with high-energy and healthy food."
   else:
-      return "Custom menu for the butler."
+    return "Custom menu for the butler."
 
 @tool
 def catering_service_tool(query: str) -> str:

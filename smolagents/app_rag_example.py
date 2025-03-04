@@ -21,7 +21,7 @@ class SolutionRetrieverTool(Tool):
   def __init__(self, docs, **kwargs):
     super().__init__(**kwargs)
     self.retriever = BM25Retriever.from_documents(
-        docs, k=5  # Retrieve the top 5 documents
+      docs, k=5  # Retrieve the top 5 documents
     )
 
   def forward(self, query: str) -> str:
