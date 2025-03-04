@@ -2,6 +2,10 @@ from smolagents import load_tool, ToolCallingAgent, CodeAgent, DuckDuckGoSearchT
 from config.tracing import setup_tracing
 from config.push_to_hub import push_to_hub
 
+from langchain.docstore.document import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.retrievers import BM25Retriever
+
 setup_tracing()
 
 @tool
@@ -70,19 +74,19 @@ class SuperheroPartyThemeTool(Tool):
 # push_to_hub(party_theme_tool)
 
 
-party_theme_tool = SuperheroPartyThemeTool()
-agent = CodeAgent(
-  tools=[party_theme_tool],
-  model=HfApiModel()
-  # model=HfApiModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
-)
+# party_theme_tool = SuperheroPartyThemeTool()
+# agent = CodeAgent(
+#   tools=[party_theme_tool],
+#   model=HfApiModel()
+#   # model=HfApiModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
+# )
 
-# Run the agent to generate a party theme idea
-result = agent.run(
-  "What would be a good superhero party idea for a 'villain masquerade' theme?"
-)
+# # Run the agent to generate a party theme idea
+# result = agent.run(
+#   "What would be a good superhero party idea for a 'villain masquerade' theme?"
+# )
 
-print(result)  # Output: "Gotham Rogues' Ball: A mysterious masquerade where guests dress as classic Batman villains."
+# print(result)  # Output: "Gotham Rogues' Ball: A mysterious masquerade where guests dress as classic Batman villains."
 
 
 # Alfred, the butler, preparing the menu for the party
@@ -101,6 +105,6 @@ print(result)  # Output: "Gotham Rogues' Ball: A mysterious masquerade where gue
 
 # agent.run("Give me the best playlist for a party at the Wayne's mansion. The party idea is a 'villain masquerade' theme")
 
-# agent = CodeAgent(tools=[], model=HfApiModel())
-# alfred_agent = agent.from_hub('sergiopaniego/AlfredAgent', trust_remote_code=True)
-# alfred_agent.run("Give me the best playlist for a party at Wayne's mansion. The party idea is a 'villain masquerade' theme")
+agent = CodeAgent(tools=[], model=HfApiModel())
+alfred_agent = agent.from_hub('sergiopaniego/AlfredAgent', trust_remote_code=True)
+alfred_agent.run("Give me the best playlist for a party at Wayne's mansion. The party idea is a 'villain masquerade' theme")
