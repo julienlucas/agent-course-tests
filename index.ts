@@ -11,46 +11,46 @@ const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
 // `;
 
 const SYSTEM_PROMPT = `
-  Answer the following questions as best you can. You have access to the following tools:
+  Réponds aux questions suivantes du mieux que tu peux. Tu as accès aux outils suivants :
 
-  get_weather: Get the current weather in a given location
+  get_weather : Obtenir la météo actuelle pour un lieu donné
 
-  The way you use the tools is by specifying a json blob.
-  Specifically, this json should have an \`action\` key (with the name of the tool to use) and an \`action_input\` key (with the input to the tool going here).
+  La manière d’utiliser ces outils consiste à spécifier un objet JSON.
+  Plus précisément, ce JSON doit comporter une clé \`action\` (contenant le nom de l’outil à utiliser) et une clé \`action_input\` (contenant l’entrée pour l’outil ici).
 
-  The only values that should be in the "action" field are:
-  get_weather: Get the current weather in a given location, args: {"location": {"type": "string"}}
-  example use :
+  Les seules valeurs possibles pour le champ "action" sont :
+  get_weather : Obtenir la météo actuelle pour un lieu donné, args: {"location": {"type": "string"}}
+  Exemple d’utilisation :
 
   {{
   "action": "get_weather",
   "action_input": {"location": "New York"}
   }}
 
-  ALWAYS use the following format:
+  UTILISE TOUJOURS le format suivant :
 
-  Question: the input question you must answer
-  Thought: you should always think about one action to take. Only one action at a time in this format:
+  Question : la question d'entrée à laquelle tu dois répondre
+  Thought : tu dois toujours réfléchir à une action à entreprendre. Une seule action à la fois dans ce format :
   Action:
 
-  $JSON_BLOB (inside markdown cell)
+  $JSON_BLOB (à l'intérieur d'une cellule markdown)
 
-  Observation: the result of the action. This Observation is unique, complete, and the source of truth.
-  ... (this Thought/Action/Observation can repeat N times, you should take several steps when needed. The $JSON_BLOB must be formatted as markdown and only use a SINGLE action at a time.)
+  Observation : le résultat de l'action. Cette Observation est unique, complète, et constitue la source de vérité.
+  ... (cette séquence Thought/Action/Observation peut se répéter N fois, tu dois effectuer plusieurs étapes si nécessaire. Le $JSON_BLOB doit être formaté en markdown et n'utiliser qu'une SEULE action à la fois.)
 
-  You must always end your output with the following format:
+  Tu dois toujours terminer ta sortie avec le format suivant :
 
-  Thought: I now know the final answer
-  Final Answer: the final answer to the original input question
+  Thought : Je connais maintenant la réponse finale
+  Final Answer: la réponse finale à la question d'entrée initiale
 
-  Now begin! Reminder to ALWAYS use the exact characters \`Final Answer:\` when you provide a definitive answer.
+  Commence maintenant ! Rappel : UTILISE TOUJOURS les caractères exacts \`Final Answer:\` lorsque tu fournis une réponse définitive.
 `;
 
 const prompt = `
   <|begin_of_text|><|start_header_id|>system<|end_header_id|>
   ${SYSTEM_PROMPT}
   <|eot_id|><|start_header_id|>user<|end_header_id|>
-  What's the weather in London ?
+  Quel est le temps à Paris?
   <|eot_id|><|start_header_id|>assistant<|end_header_id|>
 `;
 
@@ -66,7 +66,7 @@ const prompt = `
 // console.log(output);
 
 const get_weather = (location: string) => {
-  return `the weather in ${location} is sunny with low temperatures. \n`
+  return `le temps à ${location} est ensoleillé avec des températures basses. \n`
 };
 
 let output = await chatCompletion({
@@ -74,7 +74,7 @@ let output = await chatCompletion({
   model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
   messages: [
     { role: "system", content: SYSTEM_PROMPT },
-    { role: "user", content: "What's the weather in London ?" },
+    { role: "user", content: "Quel est le temps à Paris ?" },
   ],
   tokenize: false,
   add_generation_prompt: true,

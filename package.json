@@ -5,7 +5,7 @@
   "main": "agent.ts",
   "type": "module",
   "scripts": {
-    "start": "tsx agent.ts",
+    "start": "tsx index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
