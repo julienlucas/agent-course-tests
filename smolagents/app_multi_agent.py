@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from smolagents import CodeAgent, GoogleSearchTool, HfApiModel, VisitWebpageTool
-from multi_agent.calculate_cargo_travel_time import calculate_cargo_travel_time
-from multi_agent.check_reasoning_and_plot import check_reasoning_and_plot
+from tools.calculate_cargo_travel_time import calculate_cargo_travel_time
+from tools.check_reasoning_and_plot import check_reasoning_and_plot
 
 load_dotenv(override=True)
 
