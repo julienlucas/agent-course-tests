@@ -73,12 +73,10 @@ async def main():
       response_mode="tree_summarize",
   )
 
-  # # Creating a QueryEngineTool
-  # tool = QueryEngineTool.from_defaults(query_engine, name="some useful name", description="some useful description")
+  result = await query_engine.aquery("What battles took place in Paris during Napoleon's reign?")
 
   # Not mandatory : evaluate also (done here with faithfulness, true or false)
   evaluator = FaithfulnessEvaluator(llm=llm)
-  result = await query_engine.aquery("What battles took place in Paris during Napoleon's reign?")
   eval_result = await evaluator.aevaluate_response(response=result)
 
   print(result)
