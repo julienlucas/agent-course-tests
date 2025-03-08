@@ -2,8 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=ruby,rails
 
 
-### Smolagents app ###
+### Smolagents app & Chroma DB ###
 /smolagents/path
+/alfred_chroma_db
 
 ### Rails ###
 *.rbc
