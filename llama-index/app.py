@@ -1,11 +1,16 @@
 import os
-from dotenv import load_dotenv
-from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
-
 import chromadb
-from llama_index.core import VectorStoreIndex
+import asyncio
+from dotenv import load_dotenv
+
+from llama_index.core import download_loader, Document, SimpleDirectoryReader, ServiceContext, VectorStoreIndex
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.evaluation import FaithfulnessEvaluator
 from llama_index.core.tools import QueryEngineTool
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
+from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
+from llama_index.tools.google import GmailToolSpec
 from llama_index.vector_stores.chroma import ChromaVectorStore
 
 load_dotenv()
@@ -23,25 +28,15 @@ HUGGINGFACEHUB_API_TOKEN = os.getenv("HF_ACCESS_TOKEN")
 
 # print(result)
 
-import chromadb
-import asyncio
-from llama_index.core import download_loader, Document, SimpleDirectoryReader, ServiceContext
-from llama_index.core.node_parser import SentenceSplitter
-from llama_index.core.ingestion import IngestionPipeline
-from llama_index.core.evaluation import FaithfulnessEvaluator
-from llama_index.vector_stores.chroma import ChromaVectorStore
-from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
-from llama_index.tools.google import GmailToolSpec
-
 async def main():
   # Read documents
-  reader = SimpleDirectoryReader(input_dir="llama-index/documents")
-  documents = reader.load_data()
+  # reader = SimpleDirectoryReader(input_dir="llama-index/documents")
+  # documents = reader.load_data()
 
   # RAG - search on documents - Store in Chroma & indexing documents
-  db = chromadb.PersistentClient(path="./alfred_chroma_db")
-  chroma_collection = db.get_or_create_collection("alfred")
-  vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+  # db = chromadb.PersistentClient(path="./alfred_chroma_db")
+  # chroma_collection = db.get_or_create_collection("alfred")
+  # vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 
   # pipeline = IngestionPipeline(
   #   transformations=[
