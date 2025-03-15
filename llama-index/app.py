@@ -34,9 +34,9 @@ async def main():
   # documents = reader.load_data()
 
   # RAG - search on documents - Store in Chroma & indexing documents
-  # db = chromadb.PersistentClient(path="./alfred_chroma_db")
-  # chroma_collection = db.get_or_create_collection("alfred")
-  # vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+  db = chromadb.PersistentClient(path="./alfred_chroma_db")
+  chroma_collection = db.get_or_create_collection("alfred")
+  vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 
   # pipeline = IngestionPipeline(
   #   transformations=[
