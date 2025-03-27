@@ -6,6 +6,8 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage
 from langfuse.callback import CallbackHandler
 
+from IPython.display import Image, display
+
 load_dotenv()
 
 # Get keys for your project from the project settings page: https://cloud.langfuse.com
@@ -207,6 +209,11 @@ email_graph.add_edge("notify_mr_hugg_node", END)
 # Compile the graph
 compiled_graph = email_graph.compile()
 
+# Draw an graph
+png_graph = compiled_graph.get_graph().draw_mermaid_png()
+with open("./lang_graph/graph.png", "wb") as f:
+    f.write(png_graph)
+
 # Example legitimate email
 legitimate_email = {
     "sender": "john.smith@example.com",
@@ -251,6 +258,3 @@ legitimate_result = compiled_graph.invoke(
     input={"email": legitimate_email, "is_spam": None, "spam_reason": None, "email_category": None, "draft_response": None, "messages": []},
     config={"callbacks": [langfuse_handler]}
 )
-
-## TODO Should draw an graph
-# compiled_graph.get_graph().draw_mermaid_png()
