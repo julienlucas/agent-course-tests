@@ -1,6 +1,9 @@
 os
 dotenv
+Pillow
+base64
 langchain
 langfuse
 langgraph
+langchain_core
 langchain-openai
