@@ -5,6 +5,7 @@
 ### Smolagents app & Chroma DB ###
 /smolagents/path
 /alfred_chroma_db
+/venv
 
 ### Rails ###
 *.rbc
