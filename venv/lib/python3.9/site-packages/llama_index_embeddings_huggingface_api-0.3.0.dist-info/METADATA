@@ -1,0 +1,46 @@
+Metadata-Version: 2.1
+Name: llama-index-embeddings-huggingface-api
+Version: 0.3.0
+Summary: llama-index embeddings huggingface api integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.9,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: huggingface-hub[inference] (>=0.19.0)
+Requires-Dist: llama-index-core (>=0.12.0,<0.13.0)
+Requires-Dist: llama-index-utils-huggingface (>=0.3.0,<0.4.0)
+Description-Content-Type: text/markdown
+
+# LlamaIndex Embeddings Integration: Huggingface API
+
+Integration with Hugging Face's Inference API for embeddings.
+
+For more information on Hugging Face's Inference API, visit [Hugging Face's Inference API documentation](https://huggingface.co/docs/api-inference/quicktour).
+
+## Installation
+
+```shell
+pip install llama-index-embeddings-huggingface-api
+```
+
+## Usage
+
+```python
+from llama_index.embeddings.huggingface_api import (
+    HuggingFaceInferenceAPIEmbedding,
+)
+
+my_embed = HuggingFaceInferenceAPIEmbedding(
+    model_name="BAAI/bge-small-en-v1.5",
+    token="<your-token>",  # Optional
+)
+
+embeddings = my_embed.get_text_embedding("Why sky is blue")
+```
+

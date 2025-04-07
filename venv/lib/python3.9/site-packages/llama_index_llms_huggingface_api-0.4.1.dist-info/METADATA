@@ -1,0 +1,45 @@
+Metadata-Version: 2.1
+Name: llama-index-llms-huggingface-api
+Version: 0.4.1
+Summary: llama-index llms huggingface api integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.9,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: huggingface-hub (>=0.23.0)
+Requires-Dist: llama-index-core (>=0.12.0,<0.13.0)
+Description-Content-Type: text/markdown
+
+# LlamaIndex Llms Integration: Huggingface API
+
+Integration with Hugging Face's Inference API for generating text.
+
+For more information on Hugging Face's Inference API, visit [Hugging Face's Inference API documentation](https://huggingface.co/docs/api-inference/quicktour).
+
+## Installation
+
+```shell
+pip install llama-index-llms-huggingface-api
+```
+
+## Usage
+
+```python
+from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
+
+llm = HuggingFaceInferenceAPI(
+    model_name="openai-community/gpt2",
+    temperature=0.7,
+    max_tokens=100,
+    token="<your-token>",  # Optional
+)
+
+response = llm.complete("Hello, how are you?")
+```
+
