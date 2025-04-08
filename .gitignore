@@ -3,6 +3,7 @@
 
 
 ### Smolagents app & Chroma DB ###
+/frontend/node_modules
 /smolagents/path
 /smolagents/__pycache__
 /llama_index/__pycache__
