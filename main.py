@@ -39,7 +39,7 @@ class DocumentResponse(BaseModel):
 @observe()
 async def process_documents():
     # Read documents
-    reader = SimpleDirectoryReader(input_dir="../documents")
+    reader = SimpleDirectoryReader(input_dir="documents")
     documents = reader.load_data()
 
     ### Pinecone DB (for production & scaling)
