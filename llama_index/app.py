@@ -2,7 +2,12 @@ import os
 import chromadb
 import asyncio
 import shutil
+from pydantic import BaseModel
+from typing import List
+from typing import Union
 from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 
 from llama_index.core import (
     SimpleDirectoryReader,
@@ -14,9 +19,11 @@ from llama_index.core.settings import Settings
 from llama_index.core.ingestion import IngestionPipeline
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
-from llama_index.vector_stores.pinecone import PineconeVectorStore
-from pinecone import Pinecone, ServerlessSpec
+# from llama_index.vector_stores.pinecone import PineconeVectorStore
+
+# from pinecone import Pinecone, ServerlessSpec
 from langfuse.decorators import observe
+
 
 load_dotenv()
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HF_ACCESS_TOKEN")
@@ -24,34 +31,39 @@ HUGGINGFACEHUB_API_TOKEN = os.getenv("HF_ACCESS_TOKEN")
 if not HUGGINGFACEHUB_API_TOKEN:
     raise ValueError("HF_ACCESS_TOKEN not found in environment variables")
 
+app = FastAPI()
+
+class DocumentResponse(BaseModel):
+    experiences: List[str]
+
 @observe()
 async def process_documents():
     # Read documents
-    reader = SimpleDirectoryReader(input_dir="llama_index/documents")
+    reader = SimpleDirectoryReader(input_dir="documents")
     documents = reader.load_data()
 
     ### Pinecone DB (for production & scaling)
-    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-    index_name = "demo"
+    # pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+    # index_name = "demo"
 
-    # Supprimer l'index existant s'il existe
-    if index_name in pc.list_indexes().names():
-        pc.delete_index(index_name)
+    # # Supprimer l'index existant s'il existe
+    # if index_name in pc.list_indexes().names():
+    #     pc.delete_index(index_name)
 
-    # Créer un nouvel index avec la bonne dimension
-    pc.create_index(
-        name=index_name,
-        dimension=384,  # Dimension pour BAAI/bge-small-en-v1.5
-        metric="cosine",
-        spec=ServerlessSpec(
-            cloud="aws",
-            region="us-east-1"
-        )
-    )
+    # # Créer un nouvel index avec la bonne dimension
+    # pc.create_index(
+    #     name=index_name,
+    #     dimension=384,  # Dimension pour BAAI/bge-small-en-v1.5
+    #     metric="cosine",
+    #     spec=ServerlessSpec(
+    #         cloud="aws",
+    #         region="us-east-1"
+    #     )
+    # )
 
-    pinecone_index = pc.Index(index_name)
+    # pinecone_index = pc.Index(index_name)
 
-    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
 
     # ### Chroma DB (for small projects)
     # # Supprimer l'ancienne base de données Chroma si elle existe
@@ -66,8 +78,8 @@ async def process_documents():
     # )
 
     # vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # # Chucking & storing
     # pipeline = IngestionPipeline(
@@ -112,7 +124,7 @@ async def process_documents():
         similarity_top_k=3
     )
 
-    result = await query_engine.aquery(
+    response = await query_engine.aquery(
         """
         Tu es un recruteur de profils tech. Je vais te passer un document, je voudrai que tu me fasses un résumé des expériences contenue pour chaque entreprise, avec un bullet points pour chaque entreprise, et une seule phrase qui décrit l'exéprience.
 
@@ -120,21 +132,27 @@ async def process_documents():
         -SNCF (2018-2021) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
         -Sewan (2021-2022) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
 
-        Rappel: je veux les expériences par bullet points pour chaque entreprise (pas une liste de technos hasardeuses). Et vas bien jusqu'au bout du document avant de répondre.
+        Rappel: je veux les expériences par bullet points pour chaque entreprise (pas une liste de technos hasardeuses). Et vas bien jusqu'au bout du document avant de répondre, je ne veux pas d'ntreprises manquantes.
         Listes bien toutes les entreprises. Et pas juste quelqu'unes.
         Et une seule phrase pour chaque entreprise.
         """
     )
 
-    return result
+    print(response)
 
-@observe()
-async def main():
-    try:
-        result = await process_documents()
-        print(result)
-    except Exception as e:
-        print(f"Une erreur s'est produite : {str(e)}")
+    response_text = str(response)
+    formatted_response = response_text.replace(".-", ".\n-")
+
+    yield formatted_response.encode()
+
+
+@app.get("/", response_model=DocumentResponse)
+async def analyze_cv():
+    return StreamingResponse(
+        process_documents(),
+        media_type="text/plain"
+    )
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
