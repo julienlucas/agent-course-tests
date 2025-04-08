@@ -4,8 +4,12 @@
 
 ### Smolagents app & Chroma DB ###
 /smolagents/path
+/smolagents/__pycache__
+/llama_index/__pycache__
+/lang_graph/__pycache__
 /alfred_chroma_db
 /venv
+/__pycache__
 
 ### Rails ###
 *.rbc
