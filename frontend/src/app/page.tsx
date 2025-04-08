@@ -39,7 +39,7 @@ export default function Page() {
 
 
   return (
-    <main id="content">
+    <main className="px-4">
       <div className="relative h-screen">
         <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           {/* Title */}
@@ -62,21 +62,24 @@ export default function Page() {
                 height={100}
               />
             </div> */}
-            <h1 className="relative pt-8 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
-              {/* Alfred
-              <br /> */}
-              L'Agent RAG qui résume vos documents
+            <h2 className="relative pt-8 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+              <span className="text-5xl py-0 pr-3 pl-1 rounded-[.4rem] italic bg-gradient-to-r from-slate-700 via-indigo-600 bg-clip-text to-violet-500 inline-block text-transparent">
+                Alfred
+              </span>
+            </h2>
+            <h1 className="relative pt-2 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+              L'Agent RAG qui résume vos documents 👌
             </h1>
             <p className="mt-3 text-gray-600 dark:text-neutral-400">
-              Ajoutez un document (PDF ou autre) à résumer, et cliquez sur
-              envoyer
+              Ajoutez un document (PDF ou autre) à résumer par l'IA, et cliquez
+              sur envoyer
             </p>
           </div>
           {/* End Title */}
         </div>
 
-        <div className="max-w-4xl mx-auto sticky bottom-0 z-10 bg-white rounded-xl border border-gray-200 px-4 sm:px-6 lg:px-0 dark:bg-neutral-900 dark:border-neutral-700">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-0">
+        <div className="shadow-[#dedede] shadow-lg max-w-4xl mx-auto bottom-0 z-10 rounded-xl border border-gray-200 px-4 sm:px-0">
+          <div className="max-w-4xl">
             <div
               className="relative"
               onMouseEnter={() => setHoverFile(true)}
@@ -115,12 +118,12 @@ export default function Page() {
               )}
               {/* Textarea */}
               <textarea
-                className="relative shadow-[#dedede] shadow-lg outline-none focus:outline-hidden p-4 sm:p-4 pb-[25px] sm:pb-[25px] block w-full border-gray-200 rounded-lg sm:text-lg font-medium disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500"
+                className="resize-none relative outline-none focus:outline-hidden p-4 sm:p-4 pb-[25px] sm:pb-[25px] block w-full border-gray-200 rounded-lg sm:text-lg font-medium disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500"
                 placeholder="Par défaut le system prompt est configuré pour résumer"
               />
 
               {/* Toolbar */}
-              <div className="absolute bottom-px inset-x-px px-2 pb-2 rounded-b-lg bg-white dark:bg-neutral-900">
+              <div className="absolute bottom-px inset-x-px px-2 pb-2 rounded-b-lg dark:bg-neutral-900">
                 <div className="flex flex-wrap justify-between items-center gap-2">
                   {/* Button Group */}
                   <div className="flex items-center">
