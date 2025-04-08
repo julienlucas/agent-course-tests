@@ -6,8 +6,9 @@ from pydantic import BaseModel
 from typing import List
 from typing import Union
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from llama_index.core import (
     SimpleDirectoryReader,
@@ -32,6 +33,15 @@ if not HUGGINGFACEHUB_API_TOKEN:
     raise ValueError("HF_ACCESS_TOKEN not found in environment variables")
 
 app = FastAPI()
+
+# Configurer CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Autoriser spécifiquement le frontend
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 class DocumentResponse(BaseModel):
     experiences: List[str]
@@ -124,18 +134,63 @@ async def process_documents():
         similarity_top_k=3
     )
 
+    # response = await query_engine.aquery(
+    #     """
+    #     Tu es un recruteur de profils tech. Je vais te passer un document, je voudrai que tu me fasses un résumé des expériences contenue pour chaque entreprise, avec un bullet points pour chaque entreprise, et une seule phrase qui décrit l'exéprience.
+
+    #     Voici un exemple de réponse :
+    #     -SNCF (2018-2021) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
+    #     -Sewan (2021-2022) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
+
+    #     Rappel: je veux les expériences par bullet points pour chaque entreprise (pas une liste de technos hasardeuses). Et vas bien jusqu'au bout du document avant de répondre, je ne veux pas d'ntreprises manquantes.
+    #     Listes bien toutes les entreprises. Et pas juste quelqu'unes.
+    #     Et une seule phrase pour chaque entreprise.
+    #     """
+    # )
+
     response = await query_engine.aquery(
-        """
-        Tu es un recruteur de profils tech. Je vais te passer un document, je voudrai que tu me fasses un résumé des expériences contenue pour chaque entreprise, avec un bullet points pour chaque entreprise, et une seule phrase qui décrit l'exéprience.
+      """
+        Tu es un expert en analyse de documents. Je vais te passer un document, qui peut être plus ou moins de taille conséquente.
+        J'aimerai que tu me fasses un résumé de ce document, en maximum 1000 mots.
+        get_weather : Obtenir la météo actuelle pour un lieu donné
+
+        La manière d'utiliser ces outils consiste à spécifier un objet JSON.
+
+        UTILISE TOUJOURS le format suivant :
+
+        Titre du document : ici indiques le titre du document
 
         Voici un exemple de réponse :
-        -SNCF (2018-2021) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
-        -Sewan (2021-2022) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
+        Titre du document
 
-        Rappel: je veux les expériences par bullet points pour chaque entreprise (pas une liste de technos hasardeuses). Et vas bien jusqu'au bout du document avant de répondre, je ne veux pas d'ntreprises manquantes.
-        Listes bien toutes les entreprises. Et pas juste quelqu'unes.
-        Et une seule phrase pour chaque entreprise.
-        """
+        1 - Titre de la partie 1
+        Les relations entre les entreprises et les clients
+        - Bullets points de la partie 1
+
+        2 - Le potentiel de la plateforme saas
+        - Bullets points de la partie 2
+
+        3 - L'idéal pour la plateforme saas
+        - Bullets points de la partie 3
+
+        4 - L'orientation de la plateforme saas
+        - Bullets points de la partie 4
+
+        5 - Chercher un moyen de mettre en avant la plateforme saas
+        - Bullets points de la partie 5
+
+        6 - Les clients de la plateforme saas
+        - Bullets points de la partie 6
+
+        7 - Conclusion et perspectives
+        - Bullets points de la partie 7
+        ...
+
+        # Fin de l'exemple.
+
+        Commence maintenant ! Rappel: attention à bien aller jusqu'au bout du document quand tu l'analyse et le résume.
+        Prends bien ton temps.
+      """
     )
 
     print(response)
@@ -146,8 +201,18 @@ async def process_documents():
     yield formatted_response.encode()
 
 
-@app.get("/", response_model=DocumentResponse)
-async def analyze_cv():
+@app.post("/", response_model=DocumentResponse)
+async def analyze_cv(files: List[UploadFile] = File(...)):
+    # # Parcourir tous les fichiers reçus
+    # for file in files:
+    #     print(f"Titre du fichier PDF reçu : {file.filename}")
+
+    #     # Sauvegarder le fichier dans le dossier documents
+    #     file_path = os.path.join("documents", file.filename)
+    #     with open(file_path, "wb") as buffer:
+    #         content = await file.read()
+    #         buffer.write(content)
+
     return StreamingResponse(
         process_documents(),
         media_type="text/plain"
