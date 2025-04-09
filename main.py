@@ -52,8 +52,6 @@ async def process_documents(file_content):
     reader = SimpleDirectoryReader(input_dir="documents")
     documents = reader.load_data()
 
-    print(documents)
-
     # with open("documents", "wb") as f:
     #     f.write(file_content)
 
