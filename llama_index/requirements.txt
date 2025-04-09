@@ -1,4 +1,3 @@
-os
 dotenv
 asyncio
 pinecone-client

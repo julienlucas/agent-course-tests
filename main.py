@@ -1,10 +1,7 @@
 import os
-import chromadb
-import asyncio
-import shutil
+# import chromadb
 from pydantic import BaseModel
-from typing import List
-from typing import Union
+from typing import List, Union
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
@@ -20,11 +17,12 @@ from llama_index.core.settings import Settings
 from llama_index.core.ingestion import IngestionPipeline
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
-# from llama_index.vector_stores.pinecone import PineconeVectorStore
+from llama_index.vector_stores.pinecone import PineconeVectorStore
 
-# from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone, ServerlessSpec
 from langfuse.decorators import observe
 
+from llama_index.tools.clean_up_text import clean_up_text
 
 load_dotenv()
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HF_ACCESS_TOKEN")
@@ -52,27 +50,43 @@ async def process_documents():
     reader = SimpleDirectoryReader(input_dir="documents")
     documents = reader.load_data()
 
-    ### Pinecone DB (for production & scaling)
+
+
+    # Call function
+    # cleaned_docs = []
+    # for d in documents:
+    #     cleaned_text = clean_up_text(d.text)
+    #     d.text = cleaned_text
+    #     cleaned_docs.append(d)
+
+    # # Inspect output
+    # cleaned_docs[0].get_content()
+    # # Response:
+    # # "IEEE TRANSACTIONS ON JOURNAL NAME, MANUS CRIPT ID 1 Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs Yu. A. Malkov, D. A. Yashunin Abstract We present a new approach for the approximate K-nearest neighbor search based on navigable small world graphs with controllable hierarchy (Hierarchical NSW , HNSW ) and tree algorithms."
+
+    # # Great!
+    # print(cleaned_docs[0].get_content())
+
+
+
+    # # Pinecone DB (for production & scaling)
     # pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
     # index_name = "demo"
+    # existing_indexes = [i.get('name') for i in pc.list_indexes()]
 
-    # # Supprimer l'index existant s'il existe
-    # if index_name in pc.list_indexes().names():
-    #     pc.delete_index(index_name)
-
-    # # Créer un nouvel index avec la bonne dimension
-    # pc.create_index(
-    #     name=index_name,
-    #     dimension=384,  # Dimension pour BAAI/bge-small-en-v1.5
-    #     metric="cosine",
-    #     spec=ServerlessSpec(
-    #         cloud="aws",
-    #         region="us-east-1"
-    #     )
-    # )
+    # # Créer un nouvel index sur Pinecones'il n'existe pas
+    # if index_name not in existing_indexes:
+    #   pc.create_index(
+    #       name=index_name,
+    #       dimension=1536, # Avec la bonne dimension pour le LLM
+    #       metric="cosine",
+    #       spec=ServerlessSpec(
+    #           cloud="aws",
+    #           region="us-east-1"
+    #       )
+    #   )
 
     # pinecone_index = pc.Index(index_name)
-
     # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
 
     # ### Chroma DB (for small projects)
@@ -92,18 +106,17 @@ async def process_documents():
     # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # # Chucking & storing
+    # embed_model = OpenAIEmbedding(api_key=openai_api_key)
     # pipeline = IngestionPipeline(
     #   transformations=[
-    #     SentenceSplitter(chunk_size=1024, chunk_overlap=0),
-    #     HuggingFaceInferenceAPIEmbedding(
-    #       model_name="BAAI/bge-small-en-v1.5",
-    #       token=HUGGINGFACEHUB_API_TOKEN
-    #     ),
-    #     # TitleExtractor(),
-    #     # SummaryExtractor(),
-    #     # OpenAIEmbedding(),
-    #   ]
-    # )
+    #       SemanticSplitterNodeParser(
+    #           buffer_size=1,
+    #           breakpoint_percentile_threshold=95,
+    #           embed_model=embed_model,
+    #           ),
+    #       embed_model,
+    #       ],
+    #   )
 
     # # Create the index
     # nodes = await pipeline.arun(documents=documents)
@@ -133,20 +146,6 @@ async def process_documents():
         response_mode="tree_summarize",
         similarity_top_k=3
     )
-
-    # response = await query_engine.aquery(
-    #     """
-    #     Tu es un recruteur de profils tech. Je vais te passer un document, je voudrai que tu me fasses un résumé des expériences contenue pour chaque entreprise, avec un bullet points pour chaque entreprise, et une seule phrase qui décrit l'exéprience.
-
-    #     Voici un exemple de réponse :
-    #     -SNCF (2018-2021) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
-    #     -Sewan (2021-2022) - À travaillé comme développeur front-end React, pour le développement de la plateforme saas
-
-    #     Rappel: je veux les expériences par bullet points pour chaque entreprise (pas une liste de technos hasardeuses). Et vas bien jusqu'au bout du document avant de répondre, je ne veux pas d'ntreprises manquantes.
-    #     Listes bien toutes les entreprises. Et pas juste quelqu'unes.
-    #     Et une seule phrase pour chaque entreprise.
-    #     """
-    # )
 
     response = await query_engine.aquery(
       """
@@ -202,7 +201,8 @@ async def process_documents():
 
 
 @app.post("/", response_model=DocumentResponse)
-async def analyze_cv(files: List[UploadFile] = File(...)):
+# async def analyze_cv(files: List[UploadFile] = File(...)):
+async def analyze_cv():
     # # Parcourir tous les fichiers reçus
     # for file in files:
     #     print(f"Titre du fichier PDF reçu : {file.filename}")
