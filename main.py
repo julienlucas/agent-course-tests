@@ -3,18 +3,23 @@ import os
 from pydantic import BaseModel
 from typing import List, Union
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import HTTPException
 
 from llama_index.core import (
     SimpleDirectoryReader,
     VectorStoreIndex,
     StorageContext,
+    Document
 )
-from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.node_parser import MarkdownElementNodeParser, SentenceSplitter, SemanticSplitterNodeParser
 from llama_index.core.settings import Settings
 from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
@@ -24,15 +29,15 @@ from langfuse.decorators import observe
 
 from llama_index.tools.clean_up_text import clean_up_text
 
+from llama_index.readers.smart_pdf_loader import SmartPDFLoader
+
 load_dotenv()
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HF_ACCESS_TOKEN")
-
-if not HUGGINGFACEHUB_API_TOKEN:
-    raise ValueError("HF_ACCESS_TOKEN not found in environment variables")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
 
-# Configurer CORS
+# Configuration CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Autoriser spécifiquement le frontend
@@ -41,112 +46,95 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class DocumentResponse(BaseModel):
-    experiences: List[str]
-
 @observe()
-async def process_documents():
-    # Read documents
+async def process_documents(file_content):
+    # Lecture des documents
     reader = SimpleDirectoryReader(input_dir="documents")
     documents = reader.load_data()
 
+    print(documents)
 
+    # with open("documents", "wb") as f:
+    #     f.write(file_content)
 
-    # Call function
+    # LLMSHERPA_API_URL = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
+    # pdf_url = "https://arxiv.org/pdf/1910.13461.pdf"  # also allowed is a file path e.g. /home/downloads/xyz.pdf
+    # reader = SmartPDFLoader(llmsherpa_api_url=LLMSHERPA_API_URL)
+    # documents = reader.load_data(pdf_url)
+    # print(pdf_url)
+    # print(documents)
+
+    # Base de données Pinecone (pour la production et le scalage)
+    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+    index_name = "demo"
+    existing_indexes = [i.get('name') for i in pc.list_indexes()]
+
+    # Appel la fonction clean_up_text
     # cleaned_docs = []
     # for d in documents:
     #     cleaned_text = clean_up_text(d.text)
-    #     d.text = cleaned_text
-    #     cleaned_docs.append(d)
+    #     # Créer un nouveau document avec le texte nettoyé
+    #     new_doc = type(d)(text=cleaned_text)
+    #     cleaned_docs.append(new_doc)
 
     # # Inspect output
     # cleaned_docs[0].get_content()
-    # # Response:
-    # # "IEEE TRANSACTIONS ON JOURNAL NAME, MANUS CRIPT ID 1 Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs Yu. A. Malkov, D. A. Yashunin Abstract We present a new approach for the approximate K-nearest neighbor search based on navigable small world graphs with controllable hierarchy (Hierarchical NSW , HNSW ) and tree algorithms."
 
-    # # Great!
-    # print(cleaned_docs[0].get_content())
+    # Créer un nouvel index sur Pinecone s'il n'existe pas
+    if index_name not in existing_indexes:
+      pc.create_index(
+          name=index_name,
+          dimension=1536,
+          metric="cosine",
+          spec=ServerlessSpec(
+              cloud="aws",
+              region="us-east-1"
+          )
+      )
 
+    pinecone_index = pc.Index(index_name)
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
+    # Pipeline de chucking connecté à Pinecone
+    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
+    # node_parser = MarkdownElementNodeParser(embed_model, num_workers=4)
+    # nodes = node_parser.get_nodes_from_documents(documents=[documents[0]])
+    # base_nodes, objects = node_parser.get_nodes_and_objects(nodes)
 
-    # # Pinecone DB (for production & scaling)
-    # pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-    # index_name = "demo"
-    # existing_indexes = [i.get('name') for i in pc.list_indexes()]
-
-    # # Créer un nouvel index sur Pinecones'il n'existe pas
-    # if index_name not in existing_indexes:
-    #   pc.create_index(
-    #       name=index_name,
-    #       dimension=1536, # Avec la bonne dimension pour le LLM
-    #       metric="cosine",
-    #       spec=ServerlessSpec(
-    #           cloud="aws",
-    #           region="us-east-1"
-    #       )
-    #   )
-
-    # pinecone_index = pc.Index(index_name)
-    # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-
-    # ### Chroma DB (for small projects)
-    # # Supprimer l'ancienne base de données Chroma si elle existe
-    # if os.path.exists("./alfred_chroma_db"):
-    #     shutil.rmtree("./alfred_chroma_db")
-
-    # # Créer une nouvelle instance de Chroma avec la bonne dimension
-    # db = chromadb.PersistentClient(path="./alfred_chroma_db")
-    # chroma_collection = db.create_collection(
-    #     name="alfred",
-    #     metadata={"dimension": 384}
+    # pipeline = IngestionPipeline(
+    #     transformations=[
+    #         MarkdownElementNodeParser(
+    #             num_workers=4,
+    #             embed_model=embed_model,
+    #         ),
+    #         embed_model,
+    #     ],
+    #     vector_store=vector_store
     # )
 
-    # vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-    # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-    # storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-    # # Chucking & storing
-    # embed_model = OpenAIEmbedding(api_key=openai_api_key)
-    # pipeline = IngestionPipeline(
-    #   transformations=[
-    #       SemanticSplitterNodeParser(
-    #           buffer_size=1,
-    #           breakpoint_percentile_threshold=95,
-    #           embed_model=embed_model,
-    #           ),
-    #       embed_model,
-    #       ],
-    #   )
-
-    # # Create the index
-    # nodes = await pipeline.arun(documents=documents)
-    # index = VectorStoreIndex(nodes, storage_context=storage_context)
-    index = VectorStoreIndex.from_documents(documents)
-
-    # Configuration des modèles
-    embed_model = HuggingFaceInferenceAPIEmbedding(
-        model_name="BAAI/bge-small-en-v1.5",
-        token=HUGGINGFACEHUB_API_TOKEN
+    pipeline = IngestionPipeline(
+        transformations=[
+            SemanticSplitterNodeParser(
+                buffer_size=1,
+                breakpoint_percentile_threshold=95,
+                embed_model=embed_model,
+            ),
+            embed_model,
+        ],
+        vector_store=vector_store
     )
 
-    llm = HuggingFaceInferenceAPI(
-        model_name="Qwen/Qwen2.5-Coder-32B-Instruct",
-        temperature=0.1,
-        token=HUGGINGFACEHUB_API_TOKEN
-    )
+    await pipeline.arun(documents=documents)
 
-    # Configuration globale avec Settings
-    Settings.llm = llm
-    Settings.embed_model = embed_model
-    Settings.chunk_size = 1024
-    Settings.chunk_overlap = 0
+    # Création de l'Index
+    index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+    retriever = VectorIndexRetriever(index=index, similarity_top_k=5)
 
-    # Query the index
-    query_engine = index.as_query_engine(
-        response_mode="tree_summarize",
-        similarity_top_k=3
-    )
+    # Utilisation du retriever (retourne les 5 meilleurs résultats)
+    query_engine = RetrieverQueryEngine(retriever=retriever)
 
+    # Query de l'Index
     response = await query_engine.aquery(
       """
         Tu es un expert en analyse de documents. Je vais te passer un document, qui peut être plus ou moins de taille conséquente.
@@ -199,24 +187,29 @@ async def process_documents():
 
     yield formatted_response.encode()
 
+@app.post("/")
+async def analyze_cv(file: UploadFile = File(...)):
+    try:
+        if not file.filename.endswith('.pdf'):
+            raise HTTPException(
+                status_code=400,
+                detail="Le fichier doit être au format PDF"
+            )
 
-@app.post("/", response_model=DocumentResponse)
-# async def analyze_cv(files: List[UploadFile] = File(...)):
-async def analyze_cv():
-    # # Parcourir tous les fichiers reçus
-    # for file in files:
-    #     print(f"Titre du fichier PDF reçu : {file.filename}")
+        # Lire le contenu du fichier
+        content = file
 
-    #     # Sauvegarder le fichier dans le dossier documents
-    #     file_path = os.path.join("documents", file.filename)
-    #     with open(file_path, "wb") as buffer:
-    #         content = await file.read()
-    #         buffer.write(content)
+        # Traiter le document
+        return StreamingResponse(
+            process_documents(content),
+            media_type="text/plain"
+        )
 
-    return StreamingResponse(
-        process_documents(),
-        media_type="text/plain"
-    )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 if __name__ == "__main__":
     import uvicorn
