@@ -132,6 +132,7 @@ async def process_documents(file_name: str, file_content: bytes):
     await pipeline.arun(documents=document)
 
     # Récupération du VectorStoreIndex
+    # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
     index = VectorStoreIndex.from_documents(documents=document)
 
     # Utilisation du retriever (retourne les 5 meilleurs résultats)

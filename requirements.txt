@@ -4,6 +4,7 @@ pinecone-client
 pydantic
 chromadb
 langfuse
+fitz
 python-multipart
 llama-index>=0.12.0
 llama-index-core>=0.12.0
