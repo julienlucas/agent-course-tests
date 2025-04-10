@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 
 export default function Page() {
-  const [response, setResponse] = useState<string>("");
+  const [responses, setResponses] = useState<any>("");
   const [file, setFile] = useState<File | null>(null);
   const [search, setSearch] = useState<boolean>(false);
   const [hoverFile, setHoverFile] = useState<boolean>(false);
@@ -17,18 +17,26 @@ export default function Page() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("http://127.0.0.1:8000/", {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: formData,
-    });
-    const textData = await response.text();
-    setSearch(false);
-    setFile(null);
-    setResponse(textData);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: formData,
+      });
+      const textData = await response.text();
+      setSearch(false);
+      setFile(null);
+      let newReponses = [...responses];
+      newReponses.push(textData);
+      setResponses(newReponses);
+    } catch (error) {
+      setSearch(false);
+      setHoverFile(false);
+      setFile(null);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,181 +47,165 @@ export default function Page() {
 
 
   return (
-    <main className="px-4">
-      <div className="relative h-screen">
-        <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-          {/* Title */}
-          <div className="text-center">
-            <div className="flex justify-center">
-              <Image
-                src="/julien-lucas-b.jpg"
-                className="rounded-full text-center"
-                alt="Agent IA"
-                width={100}
-                height={100}
-              />
-            </div>
-            {/* <div className="flex justify-center">
-              <Image
-                src="/alfred.jpg"
-                className="rounded-full text-center"
-                alt="Agent IA"
-                width={200}
-                height={100}
-              />
-            </div> */}
-            <h2 className="relative pt-8 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
-              <span className="text-5xl py-0 pr-3 pl-1 rounded-[.4rem] italic bg-gradient-to-r from-slate-700 via-indigo-600 bg-clip-text to-violet-500 inline-block text-transparent">
-                Alfred
-              </span>
-            </h2>
-            <h1 className="relative pt-2 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
-              L'Agent RAG qui résume vos documents 👌
-            </h1>
-            <p className="mt-3 text-gray-600 dark:text-neutral-400">
-              Ajoutez un document (PDF ou autre) à résumer par l'IA, et cliquez
-              sur envoyer
-            </p>
+    <main className="px-4 relative">
+      <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        {/* Title */}
+        <div className="text-center">
+          <div className="flex justify-center">
+            <Image
+              src="/julien-lucas-b.jpg"
+              className="rounded-full text-center"
+              alt="Agent IA"
+              width={100}
+              height={100}
+            />
           </div>
-          {/* End Title */}
+          <h2 className="relative pt-8 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+            <span className="font-bold text-5xl py-0 pr-3 pl-1 rounded-[.4rem] italic bg-gradient-to-r from-slate-700 via-indigo-600 bg-clip-text to-violet-500 inline-block text-transparent">
+              Alfred
+            </span>
+          </h2>
+          <h1 className="relative pt-2 text-3xl font-bold sm:text-4xl">
+            L'Agent RAG qui résume vos documents 👌
+          </h1>
+          <p className="mt-3 text-gray-600 dark:text-neutral-400">
+            Ajoutez un document PDF à résumer par l'IA, cliquez sur envoyer et
+            attendez max 20 secondes
+          </p>
         </div>
+        {/* End Title */}
+      </div>
 
-        <div className="shadow-[#dedede] shadow-lg max-w-4xl mx-auto bottom-0 z-10 rounded-xl border border-gray-200 px-4 sm:px-0">
-          <div className="max-w-4xl">
-            <div
-              className="relative"
-              onMouseEnter={() => setHoverFile(true)}
-              onMouseLeave={() => setHoverFile(false)}
-            >
-              {file && (
-                <div className="relative m-2 mb-0 py-2 px-2 rounded-lg border border-gray-200 text-sm bg-gray-100 text-gray-600 font-bold w-fit">
-                  <div
-                    onClick={() => setFile(null)}
-                    className={`${
-                      hoverFile ? "block" : "hidden"
-                    } absolute cursor-pointer -right-3 -top-3 flex border border-gray-200 justify-center items-center rounded-full items-center bg-white rounded-full w-6 h-6`}
+      <div className="shadow-[#dedede] shadow-lg max-w-4xl mx-auto bottom-0 z-10 rounded-xl border border-gray-200 px-4 sm:px-0">
+        <div className="max-w-4xl">
+          <div
+            className="relative"
+            onMouseEnter={() => setHoverFile(true)}
+            onMouseLeave={() => setHoverFile(false)}
+          >
+            {file && (
+              <div className="relative m-2 mb-0 py-2 px-2 rounded-lg border border-gray-200 text-sm bg-gray-100 text-gray-600 font-bold w-fit">
+                <div
+                  onClick={() => setFile(null)}
+                  className={`${
+                    hoverFile ? "block" : "hidden"
+                  } absolute cursor-pointer -right-3 -top-3 flex border border-gray-200 justify-center items-center rounded-full items-center bg-white rounded-full w-6 h-6`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="14"
+                    height="14"
+                    color="#000000"
+                    fill="none"
+                  >
+                    <path
+                      d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <span className="bg-rose-500 text-xs p-2 py-1 pb-[2px] rounded-[7px] text-white mr-2 uppercase">
+                  {file ? file?.type.slice(-3) : null}
+                </span>
+                {file ? file?.name : null}
+              </div>
+            )}
+            {/* Textarea */}
+            <textarea
+              className="resize-none relative outline-none focus:outline-hidden p-4 sm:p-4 pb-[25px] sm:pb-[25px] block w-full border-gray-200 rounded-lg sm:text-lg font-medium disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500"
+              placeholder="Par défaut le system prompt est configuré pour résumer"
+            />
+
+            {/* Toolbar */}
+            <div className="absolute bottom-px inset-x-px px-2 pb-2 rounded-b-lg dark:bg-neutral-900">
+              <div className="flex flex-wrap justify-between items-center gap-2">
+                {/* Button Group */}
+                <div className="flex items-center">
+                  {/* Attach Button */}
+                  <input
+                    id="file"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    className="hidden"
+                    hidden
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="cursor-pointer bg-gray-100 hover:bg-gray-200 inline-flex shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:bg-gray-100 focus:z-10 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
                   >
                     <svg
+                      className="shrink-0 size-4"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
-                      width="14"
-                      height="14"
-                      color="#000000"
                       fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      <path
-                        d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                      <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                     </svg>
-                  </div>
-                  <span className="bg-rose-500 text-xs p-2 py-1 pb-[2px] rounded-[7px] text-white mr-2 uppercase">
-                    {file ? file?.type.slice(-3) : null}
-                  </span>
-                  {file ? file?.name : null}
+                  </button>
+                  {/* End Attach Button */}
                 </div>
-              )}
-              {/* Textarea */}
-              <textarea
-                className="resize-none relative outline-none focus:outline-hidden p-4 sm:p-4 pb-[25px] sm:pb-[25px] block w-full border-gray-200 rounded-lg sm:text-lg font-medium disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500"
-                placeholder="Par défaut le system prompt est configuré pour résumer"
-              />
+                {/* End Button Group */}
 
-              {/* Toolbar */}
-              <div className="absolute bottom-px inset-x-px px-2 pb-2 rounded-b-lg dark:bg-neutral-900">
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  {/* Button Group */}
-                  <div className="flex items-center">
-                    {/* Attach Button */}
-                    <input
-                      id="file"
-                      type="file"
-                      onChange={handleFileChange}
-                      ref={fileInputRef}
-                      className="hidden"
-                      hidden
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="cursor-pointer bg-gray-100 hover:bg-gray-200 inline-flex shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:bg-gray-100 focus:z-10 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-                    >
-                      <svg
-                        className="shrink-0 size-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                      </svg>
-                    </button>
-
-                    {/* End Attach Button */}
-                  </div>
+                {/* Button Group */}
+                <div className="flex items-center gap-x-1">
+                  {/* Mic Button */}
                   {/* End Button Group */}
 
                   {/* Button Group */}
                   <div className="flex items-center gap-x-1">
-                    {/* Mic Button */}
-                    {/* End Button Group */}
-
-                    {/* Button Group */}
-                    <div className="flex items-center gap-x-1">
-                      {/* Send Button */}
-                      <button
-                        type="button"
-                        onClick={handleSubmit}
-                        className="cursor-pointer inline-flex shrink-0 justify-center items-center size-8 rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500"
+                    {/* Send Button */}
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      className="font-bold transition-all duration-100 cursor-pointer px-2 py-1 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500"
+                    >
+                      Résumer
+                      <svg
+                        className="shrink-0 size-3.5 pl-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
                       >
-                        <svg
-                          className="shrink-0 size-3.5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
-                        </svg>
-                      </button>
-                      {/* End Send Button */}
-                    </div>
-                    {/* End Button Group */}
+                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
+                      </svg>
+                    </button>
+                    {/* End Send Button */}
                   </div>
+                  {/* End Button Group */}
                 </div>
-                {/* End Toolbar */}
               </div>
-              {/* End Input */}
+              {/* End Toolbar */}
             </div>
-            {/* End Textarea */}
+            {/* End Input */}
           </div>
+          {/* End Textarea */}
         </div>
+      </div>
 
-        <div className="max-w-4xl py-10 lg:py-14 mx-auto">
-          {search && (
-            <div className="flex justify-start mt-2 space-x-2">
-              <div className="animate-bounce h-1 w-1 bg-gray-300 mr-2 rounded-full" />
-              <div className="animate-bounce h-1 w-1 bg-gray-300 mr-2 rounded-full animation-delay-200" />
-              <div className="animate-bounce h-1 w-1 bg-gray-300 mr-2 rounded-full animation-delay-400" />
-            </div>
-          )}
-
-          {response && (
-            <ul className="mt-2 space-y-5">
+      <div className="max-w-4xl py-10 lg:py-14 mx-auto">
+        {responses.length > 0 &&
+          responses.map((response: any, i: number) => (
+            <ul key={`${i}-reponse`} className="mt-2 mb-10 space-y-5">
               {/* Chat Bubble */}
-              <li className="max-w-5xl ms-auto flex justify-start gap-x-2 sm:gap-x-4">
+              <li className="mb-2 max-w-5xl ms-auto flex justify-start gap-x-2 sm:gap-x-4">
                 <div className="grow text-start space-y-3">
                   {/* Card */}
-                  <div className="inline-block bg-blue-600 rounded-lg p-4 shadow-2xs">
+                  <div className="inline-block bg-blue-600 rounded-xl p-4 shadow-2xs">
                     <p
                       className="text-sm text-white"
                       dangerouslySetInnerHTML={{ __html: response }}
@@ -222,16 +214,102 @@ export default function Page() {
                   {/* End Card */}
                 </div>
 
-                <span className="shrink-0 inline-flex items-center justify-center size-9.5 rounded-full bg-gray-600">
+                <span className="shrink-0 inline-flex items-center justify-center size-9.5 rounded-full bg-slate-600">
                   <span className="text-sm font-medium text-white">IA</span>
                 </span>
               </li>
               {/* End Chat Bubble */}
             </ul>
-          )}
+          ))}
+
+        {search && (
+          <div className="px-4 mt-4 flex justify-start space-x-2">
+            <div className="animate-bouncing h-1 w-1 bg-gray-300 mr-2 rounded-full animation-delay-200" />
+            <div className="animate-bouncing h-1 w-1 bg-gray-300 mr-2 rounded-full animation-delay-400" />
+            <div className="animate-bouncing h-1 w-1 bg-gray-300 mr-2 rounded-full" />
+          </div>
+        )}
+
+        <div className="mt-52 max-w-xl py-10 lg:py-14 mx-auto">
+          <p className="text-center">Réalisé avec</p>
+
+          <div className="mt-4 max-w-3xl mx-auto md:flex grid md:grid-cols-6 grid-cols-1 gap-2 w-full">
+            <div className="relative mx-auto w-40 w-full h-12">
+              <Image
+                className="-mt-3"
+                src="/logo-next.svg"
+                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                layout="fill"
+                objectFit="contain"
+                draggable="false"
+              />
+            </div>
+            <div className="relative mx-auto w-40 w-full h-4">
+              <Image
+                className="-ml-1 mt-1"
+                src="/logo-tailwind.svg"
+                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                layout="fill"
+                objectFit="contain"
+                draggable="false"
+              />
+            </div>
+            <div className="relative mx-auto max-w-40 w-full h-6">
+              <Image
+                className="ml-4"
+                src="/logo-pinecone.svg"
+                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                layout="fill"
+                objectFit="contain"
+                draggable="false"
+              />
+            </div>
+            <div className="relative mx-auto max-w-40 w-full h-8">
+              <Image
+                className=""
+                src="/logo-python.svg"
+                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                layout="fill"
+                objectFit="contain"
+                draggable="false"
+              />
+            </div>
+            <div className="relative mx-auto max-w-40 w-full h-8">
+              <Image
+                className=""
+                src="/logo-llama-index.webp"
+                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                layout="fill"
+                objectFit="contain"
+                draggable="false"
+              />
+            </div>
+            <div className="relative mx-auto max-w-40 w-full h-8">
+              <Image
+                className=""
+                src="/logo-chatgpt.svg"
+                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                layout="fill"
+                objectFit="contain"
+                draggable="false"
+              />
+            </div>
+          </div>
+
+          <p className="text-center">
+            Vous êtes fondateur, une startup et vous avez un projet à réaliser?
+            <br />
+            Je réalise vos projets de MVP d'IA et saas en moins d'1 mois.
+          </p>
+          <br />
+          <div className="relative flex justify-center">
+            <button className="font-bold transition-all duration-100 text-xl flex justify-center cursor-pointer px-5 py-4 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500">
+              Contactez-moi
+            </button>
+          </div>
         </div>
-        {/* End Content */}
       </div>
+      {/* End Content */}
     </main>
   );
 }

@@ -1,38 +1,42 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: red;
+  --foreground: red;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: red;
+    --foreground: red;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica, sans-serif;
 }
 
-.animation-delay-100 {
-  animation-delay: 0.1s;
+@keyframes bouncing {
+  0%, 100% {
+    transform: translateY(100%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+.animate-bouncing {
+  animation: bouncing 2s infinite;
 }
 
 .animation-delay-200 {
-  animation-delay: 0.2s;
+  animation-delay: 200ms;
 }
 
 .animation-delay-400 {
-  animation-delay: 0.4s;
+  animation-delay: 400ms;
 }
