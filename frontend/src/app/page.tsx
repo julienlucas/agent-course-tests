@@ -21,8 +21,10 @@ export default function Page() {
     // newReponses.unshift(file.name);
 
     try {
+      const BACKEND = process.env.NODE_ENV === "development" ?
+        "http://127.0.0.1:8000/" : "https://agent-ia-julien-lucas.vercel.app/";
       setFirstSearch(true);
-      const response = await fetch("http://127.0.0.1:8000/", {
+      const response = await fetch(BACKEND, {
         method: "POST",
         mode: "cors",
         headers: {
