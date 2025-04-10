@@ -1,7 +1,8 @@
 import os
 # import chromadb
 import re
-import requests
+# import requests
+import asyncio
 import fitz # PyMuPDF
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
@@ -71,7 +72,7 @@ async def process_documents(file_name: str, file_content: bytes):
 
     # Base de données Pinecone (pour la production et le scalage)
     pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-    index_name = file_name
+    index_name = 'demo-agent-ia'
     existing_indexes = [i.get('name') for i in pc.list_indexes()]
 
     # Appel la fonction clean_up_text (si nécessaire)
@@ -98,7 +99,8 @@ async def process_documents(file_name: str, file_content: bytes):
       )
 
     pinecone_index = pc.Index(index_name)
-    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    namespace = file_name
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index, namespace=namespace)
     # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # Pipeline de chucking connecté à Pinecone
@@ -130,10 +132,10 @@ async def process_documents(file_name: str, file_content: bytes):
     await pipeline.arun(documents=document)
 
     # Récupération du VectorStoreIndex
-    index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+    index = VectorStoreIndex.from_documents(documents=document)
 
     # Utilisation du retriever (retourne les 5 meilleurs résultats)
-    retriever = VectorIndexRetriever(index=index, similarity_top_k=5)
+    retriever = VectorIndexRetriever(index=index, similarity_top_k=3)
     query_engine = RetrieverQueryEngine(retriever=retriever)
 
     # Query de l'Index
@@ -175,92 +177,28 @@ async def process_documents(file_name: str, file_content: bytes):
 
         Important: Avant chaque titre de chapitre, je veux que tu ajoutes ça "<br/><br/>" pour faire un saut de ligne en HTML.
         Important aussi: fais des saute de lignes entre les bullets points. Ajoutes ça "<br/>" avant chaque "-"
+        Important encore: mets ta réponse finale en français (dans le cas où le document n'était pas en français à l'origine)
 
         Rappel: attention à bien aller jusqu'au bout du document quand tu l'analyse et le résume.
+        Rappel: attention à bien respecter le formatage des sauts de ligne HTML.
         Prends bien ton temps et traite bien CHAQUE chapitre du document.
       """
     )
 
-    # response = await query_engine.aquery(
-    #   """
-    #     Tu es un expert en analyse de documents. Je vais te passer un document, qui peut être plus ou moins de taille conséquente.
-    #     J'aimerai que tu me fasses un résumé de ce document, tu peux aller jusqu'à 2000 mots.
-
-    #     Réponds toujours au format objet JSON.
-
-    #     UTILISE TOUJOURS le format suivant :
-    #     {
-    #       "Indiques le titre du document": {
-    #         "1 - Titre du chapitre 1": {
-    #           "Titre du point 1": "Résumé",
-        #       "Titre du point 2": "Résumé",
-        #       "Titre du point 3": "Résumé",
-        #       "Titre du point 4": "Résumé",
-        #       "Titre du point 5": "Résumé",
-        #     },
-        #     "2 - Titre du chapitre 2": {
-        #       "Titre du point 1": "Résumé",
-        #       "Titre du point 2": "Résumé",
-        #       "Titre du point 3": "Résumé",
-        #       "Titre du point 4": "Résumé",
-        #       "Titre du point 5": "Résumé",
-        #     },
-        #     "3 - Titre du chapitre 3": {
-        #       "Titre du point 1": "Résumé",
-        #       "Titre du point 2": "Résumé",
-        #       "Titre du point 3": "Résumé",
-        #       "Titre du point 4": "Résumé",
-        #       "Titre du point 5": "Résumé",
-        #     },
-        #   }
-        # }
-
-    #     Voici un exemple de réponse :
-    #     Indiques le titre du document
-
-    #     1 - Titre de la partie 1
-    #     Les relations entre les entreprises et les clients
-    #     - Bullet points de la partie 1
-    #     - Bullet points de la partie 1
-    #     - Bullet points de la partie 1
-
-    #     2 - Le potentiel de la plateforme saas
-    #     - Bullet points de la partie 2
-    #     - Bullet points de la partie 2
-    #     - Bullet points de la partie 2
-
-    #     3 - L'idéal pour la plateforme saas
-    #     - Bullet points de la partie 3
-    #     - Bullet points de la partie 3
-    #     - Bullet points de la partie 3
-
-    #     4 - L'orientation de la plateforme saas
-    #     - Bullet points de la partie 4
-    #     - Bullet points de la partie 5
-    #     - Bullet points de la partie 4
-
-    #     5 - Chercher un moyen de mettre en avant la plateforme saas
-    #     - Bullet points de la partie 5
-    #     - Bullet points de la partie 5
-    #     - Bullet points de la partie 5
-    #     ...
-
-    #     # Fin de l'exemple.
-
-    #     Commence maintenant ! Rappel: attention à bien aller jusqu'au bout du document quand tu l'analyse et le résume.
-    #     Rappel: tu dois répondre uniquement au format objet JSON.
-    #     Prends bien ton temps.
-    #   """
-    # )
-
     print(response)
 
-    response_text = str(response)
-    formatted_response = response_text.replace(".-", ".\n-")
-    # formatted_response = response_text.replace(" -", "<br/><br/>")
-    # formatted_response = formatted_response.replace(".-", "<br/><br/>")
+    try:
+        if not response or not str(response).strip():
+            raise ValueError("Le LLM n'a pas généré de réponse valide")
 
-    yield formatted_response.encode()
+        response_text = str(response)
+        formatted_response = response_text.replace(".-", ".\n-")
+        yield formatted_response.encode()
+
+    except Exception as e:
+        print(f"Erreur lors du traitement: {str(e)}")
+        error_message = f"Erreur lors du traitement du document: {str(e)}"
+        yield error_message.encode()
 
 @app.post("/")
 async def analyze_cv(file: UploadFile = File(...)):
@@ -287,4 +225,6 @@ async def analyze_cv(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
     uvicorn.run(app, host="0.0.0.0", port=8000)
