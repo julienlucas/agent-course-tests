@@ -5,6 +5,7 @@ pydantic
 chromadb
 langfuse
 fitz
+tools
 python-multipart
 llama-index>=0.12.0
 llama-index-core>=0.12.0
