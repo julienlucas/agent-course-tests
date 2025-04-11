@@ -29,10 +29,10 @@ export default function Page() {
       setFirstSearch(true);
       const response = await fetch(BACKEND_AGENT_API_URL, {
         method: "POST",
-        mode: "cors",
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
+        // mode: "cors",
+        // headers: {
+        //   "Access-Control-Allow-Origin": "*",
+        // },
         body: formData,
       });
       const textData = await response.text();
