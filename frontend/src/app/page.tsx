@@ -21,10 +21,7 @@ export default function Page() {
     // newReponses.unshift(file.name);
 
     try {
-      const BACKEND_AGENT_API_URL =
-        process.env.NODE_ENV === "development"
-          ? "http://127.0.0.1:8000/"
-          : "https://agent-course-tests.onrender.com/";
+      const BACKEND_AGENT_API_URL = "https://agent-course-tests.onrender.com/";
 
       setFirstSearch(true);
       const response = await fetch(BACKEND_AGENT_API_URL, {
@@ -246,24 +243,22 @@ export default function Page() {
         <div className="max-w-xl py-10 lg:py-14 mx-auto">
           <p className="text-center">Réalisé avec</p>
 
-          <div className="mt-4 max-w-3xl mx-auto md:flex grid md:grid-cols-6 grid-cols-1 gap-2 w-full">
+          <div className="mt-5 max-w-3xl mx-auto md:flex grid md:grid-cols-6 grid-cols-1 gap-2 w-full">
             <div className="relative mx-auto w-40 w-full h-12">
               <Image
-                className="-mt-3"
+                className="-mt-2"
                 src="/logo-next.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 layout="fill"
-                objectFit="contain"
                 draggable="false"
               />
             </div>
             <div className="relative mx-auto w-40 w-full h-4">
               <Image
-                className="-ml-1 mt-1"
+                className="-ml-1 mt-2"
                 src="/logo-tailwind.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 layout="fill"
-                objectFit="contain"
                 draggable="false"
               />
             </div>
@@ -273,7 +268,6 @@ export default function Page() {
                 src="/logo-pinecone.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 layout="fill"
-                objectFit="contain"
                 draggable="false"
               />
             </div>
@@ -283,7 +277,6 @@ export default function Page() {
                 src="/logo-python.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 layout="fill"
-                objectFit="contain"
                 draggable="false"
               />
             </div>
@@ -293,7 +286,6 @@ export default function Page() {
                 src="/logo-llama-index.webp"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 layout="fill"
-                objectFit="contain"
                 draggable="false"
               />
             </div>
@@ -303,7 +295,6 @@ export default function Page() {
                 src="/logo-chatgpt.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 layout="fill"
-                objectFit="contain"
                 draggable="false"
               />
             </div>
