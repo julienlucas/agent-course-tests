@@ -29,10 +29,13 @@ export default function Page() {
       setFirstSearch(true);
       const response = await fetch(BACKEND_AGENT_API_URL, {
         method: "POST",
-        // mode: "cors",
-        // headers: {
-        //   "Access-Control-Allow-Origin": "*",
-        // },
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          "Access-Control-Allow-Origin": "https://agent-course-tests-front-2.onrender.com",
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Methods": "POST",
+        },
         body: formData,
       });
       const textData = await response.text();
