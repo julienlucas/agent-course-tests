@@ -252,7 +252,7 @@ export default function Page() {
                 className="-mt-2"
                 src="/logo-next.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
-                layout="fill"
+                fill
                 draggable="false"
               />
             </div>
@@ -261,7 +261,7 @@ export default function Page() {
                 className="-ml-1 mt-2"
                 src="/logo-tailwind.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
-                layout="fill"
+                fill
                 draggable="false"
               />
             </div>
@@ -270,7 +270,7 @@ export default function Page() {
                 className="ml-4"
                 src="/logo-pinecone.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
-                layout="fill"
+                fill
                 draggable="false"
               />
             </div>
@@ -279,7 +279,7 @@ export default function Page() {
                 className=""
                 src="/logo-python.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
-                layout="fill"
+                fill
                 draggable="false"
               />
             </div>
@@ -288,7 +288,7 @@ export default function Page() {
                 className=""
                 src="/logo-llama-index.webp"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
-                layout="fill"
+                fill
                 draggable="false"
               />
             </div>
@@ -297,7 +297,7 @@ export default function Page() {
                 className=""
                 src="/logo-chatgpt.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
-                layout="fill"
+                fill
                 draggable="false"
               />
             </div>
@@ -311,8 +311,14 @@ export default function Page() {
           <br />
           <div className="relative flex justify-center">
             <button
-            onClick={() => window.open("https://www.linkedin.com/in/julien-lucas-jl/", "_blank")}
-            className="font-bold transition-all duration-100 text-xl flex justify-center cursor-pointer px-5 py-4 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500">
+              onClick={() =>
+                window.open(
+                  "https://www.linkedin.com/in/julien-lucas-jl/",
+                  "_blank"
+                )
+              }
+              className="font-bold transition-all duration-100 text-xl flex justify-center cursor-pointer px-5 py-4 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500"
+            >
               Contactez-moi
             </button>
           </div>

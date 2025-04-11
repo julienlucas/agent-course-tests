@@ -44,7 +44,7 @@ app = FastAPI()
 # Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Autoriser spécifiquement le frontend
+    allow_origins=["http://localhost:3000", "https://agent-course-tests.onrender.com/"],  # Autoriser spécifiquement le frontend
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
