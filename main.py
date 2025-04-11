@@ -2,7 +2,6 @@ import os
 # import chromadb
 import re
 # import requests
-import asyncio
 import fitz # PyMuPDF
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile

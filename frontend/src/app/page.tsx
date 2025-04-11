@@ -21,8 +21,10 @@ export default function Page() {
     // newReponses.unshift(file.name);
 
     try {
-      const BACKEND_AGENT_API_URL = process.env.NODE_ENV === "development" ?
-        "http://127.0.0.1:8000/" : "https://agent-ia-julien-lucas.vercel.app/";
+      const BACKEND_AGENT_API_URL =
+        process.env.NODE_ENV === "development"
+          ? "http://127.0.0.1:8000/"
+          : "https://agent-course-tests.onrender.com/";
 
       setFirstSearch(true);
       const response = await fetch(BACKEND_AGENT_API_URL, {

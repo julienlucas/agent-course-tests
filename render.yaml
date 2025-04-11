@@ -3,14 +3,20 @@ services:
     name: backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
-    repo: https://github.com/julienlucas/agent-course-tests.git
-    branch: main
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
+    plan: free
+    region: frankfurt
+    runtime: python
+    autoDeploy: true
 
-  - type: static
+  - type: web
     name: frontend
     env: static
-    staticSite:
-      directory: frontend
-    repo: https://github.com/julienlucas/agent-course-tests.git
-    branch: main
+    buildCommand: cd frontend && pnpm install && pnpm run build
+    startCommand: cd frontend && pnpm run dev
+    staticPublishPath: frontend/
+    buildFilter:
+      paths:
+        - frontend/**
+    plan: free
+    autoDeploy: true

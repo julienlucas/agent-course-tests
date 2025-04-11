@@ -1,5 +1,4 @@
 dotenv
-asyncio
 pinecone-client
 pydantic
 chromadb
