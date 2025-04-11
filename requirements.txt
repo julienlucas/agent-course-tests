@@ -4,7 +4,8 @@ pydantic
 chromadb
 langfuse
 fitz
-PyMuPDF
+requests
+PyMuPDF==1.23.8
 tools
 python-multipart
 llama-index>=0.12.0

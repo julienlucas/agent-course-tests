@@ -258,7 +258,7 @@ export default function Page() {
             </div>
             <div className="relative mx-auto w-40 w-full h-4">
               <Image
-                className="-ml-1 mt-2"
+                className="md:-ml-1 ml-0 md:mt-2 -mt-2"
                 src="/logo-tailwind.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 fill
@@ -267,7 +267,7 @@ export default function Page() {
             </div>
             <div className="relative mx-auto max-w-40 w-full h-6">
               <Image
-                className="ml-4"
+                className="md:ml-4 ml-0"
                 src="/logo-pinecone.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 fill
