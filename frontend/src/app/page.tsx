@@ -30,11 +30,8 @@ export default function Page() {
       const response = await fetch(BACKEND_AGENT_API_URL, {
         method: "POST",
         mode: "cors",
-        credentials: "include",
         headers: {
-          "Access-Control-Allow-Origin": "https://agent-course-tests-front-2.onrender.com",
-          "Access-Control-Allow-Credentials": "true",
-          "Access-Control-Allow-Methods": "POST",
+          "Accept": "application/json",
         },
         body: formData,
       });
