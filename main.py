@@ -2,7 +2,8 @@ import os
 # import chromadb
 import re
 # import requests
-import fitz # PyMuPDF
+# import fitz # PyMuPDF
+import pymupdf
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
@@ -30,6 +31,7 @@ from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedd
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 
+from langchain_community.document_loaders import PyMuPDFLoader
 from pinecone import Pinecone, ServerlessSpec
 from langfuse.decorators import observe
 
@@ -44,7 +46,7 @@ app = FastAPI()
 # Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://agent-course-tests-front-2.onrender.com"],  # Autoriser spécifiquement le frontend
+    allow_origins=["http://localhost:3000"],  # Autoriser spécifiquement le frontend
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -61,7 +63,7 @@ async def process_documents(file_name: str, file_content: bytes):
     # text = response.text
     # documents = [Document(text=text)]
 
-    pdf = fitz.open(stream=file_content, filetype="pdf")
+    pdf = pymupdf.open(stream=file_content, filetype="pdf")
 
     all_text = ""
     for page in pdf:
