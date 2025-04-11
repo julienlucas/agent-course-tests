@@ -5,7 +5,7 @@ chromadb
 langfuse
 fitz
 requests
-pymupdf==1.23.8
+pymupdf
 tools
 python-multipart
 llama-index>=0.12.0

@@ -17,6 +17,7 @@ export default function Page() {
     setSearch(true);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("user_prompt", "Le résumé doit faire max 100mots");
     let newReponses = [...responses];
     // newReponses.unshift(file.name);
 
@@ -33,7 +34,7 @@ export default function Page() {
         headers: {
           "Accept": "application/json",
         },
-        body: formData,
+        body: formData
       });
       const textData = await response.text();
 
@@ -80,7 +81,7 @@ export default function Page() {
           </h1>
           <p className="mt-3 text-gray-600 dark:text-neutral-400">
             Ajoutez un document PDF à résumer par l'IA, cliquez sur envoyer et
-            attendez max 20 secondes
+            attendez max 10 secondes
           </p>
         </div>
         {/* End Title */}
@@ -243,10 +244,10 @@ export default function Page() {
             </ul>
           ))}
 
-        <div className="max-w-xl py-10 lg:py-14 mx-auto">
+        <div className="max-w-2xl py-10 lg:py-14 mx-auto">
           <p className="text-center">Réalisé avec</p>
 
-          <div className="mt-5 max-w-3xl mx-auto md:flex grid md:grid-cols-6 grid-cols-1 gap-2 w-full">
+          <div className="mt-5 max-w-xl mx-auto md:flex grid md:grid-cols-6 grid-cols-1 gap-2 w-full">
             <div className="relative mx-auto w-40 w-full h-12">
               <Image
                 className="-mt-2"
@@ -295,7 +296,7 @@ export default function Page() {
             <div className="relative mx-auto max-w-40 w-full h-8">
               <Image
                 className=""
-                src="/logo-chatgpt.svg"
+                src="/logo-mistral.svg"
                 alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
@@ -306,7 +307,7 @@ export default function Page() {
           <p className="text-center">
             Vous êtes fondateur, une startup, et vous avez un projet à réaliser?
             <br />
-            Je réalise vos projets de MVP d'IA et saas en moins d'1 mois.
+            Je réalise vos projets de MVP IA et saas vitesse éclair (moins d'1 mois). Intéréssé?
           </p>
           <br />
           <div className="relative flex justify-center">

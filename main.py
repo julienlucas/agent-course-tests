@@ -5,7 +5,7 @@ import re
 import fitz
 import pymupdf
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
@@ -31,7 +31,9 @@ from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedd
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 
-from langchain_community.document_loaders import PyMuPDFLoader
+from llama_index.llms.mistralai import MistralAI
+from llama_index.embeddings.mistralai import MistralAIEmbedding
+
 from pinecone import Pinecone, ServerlessSpec
 from langfuse.decorators import observe
 
@@ -40,6 +42,7 @@ from llama_index.tools.clean_up_text import clean_up_text
 load_dotenv()
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HF_ACCESS_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+MISTRALAI_API_KEY = os.getenv("MISTRALAI_API_KEY")
 
 app = FastAPI()
 
@@ -53,7 +56,7 @@ app.add_middleware(
 )
 
 @observe()
-async def process_documents(file_name: str, file_content: bytes):
+async def process_documents(file_name: str, file_content: bytes, user_prompt: str):
     # Lecture des documents dans répertoire
     # reader = SimpleDirectoryReader(input_dir="documents")
     # documents = reader.load_data()
@@ -91,7 +94,7 @@ async def process_documents(file_name: str, file_content: bytes):
     if index_name not in existing_indexes:
       pc.create_index(
           name=index_name,
-          dimension=1536,
+          dimension=1024, # Dimension pour LLM MistralAI (ChatGPT: 1536)
           metric="cosine",
           spec=ServerlessSpec(
               cloud="aws",
@@ -105,7 +108,9 @@ async def process_documents(file_name: str, file_content: bytes):
     # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # Pipeline de chucking connecté à Pinecone
-    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
+    # embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
+
+    embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=MISTRALAI_API_KEY)
 
     pipeline = IngestionPipeline(
         # transformations=[
@@ -142,12 +147,19 @@ async def process_documents(file_name: str, file_content: bytes):
 
     # Query de l'Index
     response = await query_engine.aquery(
-      """
-        Tu es un expert en analyse de documents. Je vais te passer un document, ce document peut être plus ou moins de taille conséquente.
-        J'aimerai que tu me résume ce document par chapitre. Chaque chapitre étant résumé en bullet points.
-        Tu peux aller jusqu'à 2000 mots en tout. N'hésites pas à utiliser les 2000 mots.
+      f"""
+        Tu es un expert en lecture et synthèse de documents professionnels. Tu vas recevoir un texte extrait d’un document PDF.
+        Ce texte peut contenir plusieurs chapitres, sections ou parties, et potentiellement être dense ou long.
 
-        UTILISE TOUJOURS le format HTML suivant :
+        Ta mission est de synthétiser ce document de manière claire, complète et structurée. Pour cela :
+
+        1. Identifie les grandes parties ou chapitres du document (tu peux te baser sur les titres ou les changements de thématique).
+        2. Pour chaque partie, rédige un résumé sous forme de bullet points.
+        3. Utilise un langage clair, professionnel et accessible.
+        4. Ne laisse  \`aucune partie du document sans traitement\`.
+        5. Utilise \`jusqu’à 2000 mots\` si nécessaire pour garantir la richesse du résumé.
+
+        UTILISE TOUJOURS le format \`HTML\` suivant :
 
         <strong>Indiques le titre du document</strong>
         <br/><br/>
@@ -172,20 +184,71 @@ async def process_documents(file_name: str, file_content: bytes):
         - Bullet points de la partie 5<br/>
         - Bullet points de la partie 5<br/>
         - Bullet points de la partie 5><br/>
-        ...
 
-        # Fin de l'exemple.
+        (...)
 
+        <br/><strong>Conclusion ou section finale (si elle existe)</strong><br/>
+        - [Bullet point final]<br/><br/>
 
-        Important: Avant chaque titre de chapitre, je veux que tu ajoutes ça "<br/><br/>" pour faire un saut de ligne en HTML.
-        Important aussi: fais des saute de lignes entre les bullets points. Ajoutes ça "<br/>" avant chaque "-"
-        Important encore: mets ta réponse finale en français (dans le cas où le document n'était pas en français à l'origine)
+        FIN DE L'EXEMPLE.
 
-        Rappel: attention à bien aller jusqu'au bout du document quand tu l'analyse et le résume.
-        Rappel: attention à bien respecter le formatage des sauts de ligne HTML.
-        Prends bien ton temps et traite bien CHAQUE chapitre du document.
+        Règles supplémentaires :
+        - Avant chaque titre de chapitre, ajoute un double saut de ligne `<br/><br/>`
+        - Avant chaque bullet point, commence par un seul saut de ligne `<br/>-`
+        - N’invente rien. Ne comble pas les vides avec des hypothèses.
+        - Si le document est désorganisé ou sans structure, regroupe les idées par thème logique.
+
+        Important: traduit la réponse finale en français (et en conservant la règle du format HTML et des sauts de ligne).
       """
     )
+    # response = await query_engine.aquery(
+    #   f"""
+    #     CONTEXT:
+    #     Tu es un expert en synthèse de documents. Je vais te passer un document, de taille plus ou moins conséquente.
+    #     J'aimerai que tu me résume le document chapitre par chapitre. Chaque chapitre résumé en bullet points.
+    #     Vas jusqu'à 2500 mots en tout pour répondre. N'hésites surtout pas à utiliser les 2500 mots.
+
+    #     UTILISE TOUJOURS le format HTML suivant :
+
+    #     <strong>Indiques le titre du document</strong>
+    #     <br/><br/>
+    #     <strong>1 - Titre de la partie 1</strong><br/>
+    #     Les relations entre les entreprises et les clients<br/>
+    #     - Bullet points de la partie 1<br/>
+    #     - Bullet points de la partie 1<br/>
+    #     - Bullet points de la partie 1<br/>
+    #     <br/><strong>2 - Le potentiel de la plateforme saas</strong><br/>
+    #     - Bullet points de la partie 2<br/>
+    #     - Bullet points de la partie 2<br/>
+    #     - Bullet points de la partie 2<br/>
+    #     <br/><strong>3 - L'idéal pour la plateforme saas</strong><br/>
+    #     - Bullet points de la partie 3<br/>
+    #     - Bullet points de la partie 3<br/>
+    #     - Bullet points de la partie 3<br/>
+    #     <br/><strong>4 - L'orientation de la plateforme saas</strong><br/>
+    #     - Bullet points de la partie 4<br/>
+    #     - Bullet points de la partie 5<br/>
+    #     - Bullet points de la partie 4<br/>
+    #     <br/><strong>5 - Chercher un moyen de mettre en avant la plateforme saas</strong><br/>
+    #     - Bullet points de la partie 5<br/>
+    #     - Bullet points de la partie 5<br/>
+    #     - Bullet points de la partie 5><br/>
+    #     ...
+
+    #     # Fin de l'exemple.
+
+    #     Rappel: Avant chaque titre de chapitre, ajoutes ça '<br/><br/>' pour faire un saut de ligne en HTML.
+    #     Rappel aussi: saute bien les lignes entre les bullets points - ajoutes ça '<br/>' avant chaque '-'
+
+    #     Important: traduit la réponse finale en français.
+
+    #     Prends bien ton temps et traite bien CHAQUE chapitre du document.
+
+    #     USER_PROMPT:
+    #     Ceci est le user prompt {user_prompt}.
+    #     Si ce prompt vient ajouter des informations par rapport au context prompt, ajoutes les instructions de l'utilisateur aux instructions finales du prompt.
+    #   """
+    # )
 
     print(response)
 
@@ -203,7 +266,7 @@ async def process_documents(file_name: str, file_content: bytes):
         yield error_message.encode()
 
 @app.post("/")
-async def analyze_cv(file: UploadFile = File(...)):
+async def analyze_cv(file: UploadFile = File(...), user_prompt: str = Form(...)):
     try:
         if not file.filename.endswith('.pdf'):
             raise HTTPException(
@@ -215,7 +278,7 @@ async def analyze_cv(file: UploadFile = File(...)):
         file_name = re.sub(r'[^A-Za-z0-9]+', '-', file.filename).lower()[:45]
 
         return StreamingResponse(
-            process_documents(file_name, file_content),
+            process_documents(file_name, file_content, user_prompt),
             media_type="text/plain"
         )
 
