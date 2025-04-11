@@ -201,54 +201,6 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
         Important: traduit la réponse finale en français (et en conservant la règle du format HTML et des sauts de ligne).
       """
     )
-    # response = await query_engine.aquery(
-    #   f"""
-    #     CONTEXT:
-    #     Tu es un expert en synthèse de documents. Je vais te passer un document, de taille plus ou moins conséquente.
-    #     J'aimerai que tu me résume le document chapitre par chapitre. Chaque chapitre résumé en bullet points.
-    #     Vas jusqu'à 2500 mots en tout pour répondre. N'hésites surtout pas à utiliser les 2500 mots.
-
-    #     UTILISE TOUJOURS le format HTML suivant :
-
-    #     <strong>Indiques le titre du document</strong>
-    #     <br/><br/>
-    #     <strong>1 - Titre de la partie 1</strong><br/>
-    #     Les relations entre les entreprises et les clients<br/>
-    #     - Bullet points de la partie 1<br/>
-    #     - Bullet points de la partie 1<br/>
-    #     - Bullet points de la partie 1<br/>
-    #     <br/><strong>2 - Le potentiel de la plateforme saas</strong><br/>
-    #     - Bullet points de la partie 2<br/>
-    #     - Bullet points de la partie 2<br/>
-    #     - Bullet points de la partie 2<br/>
-    #     <br/><strong>3 - L'idéal pour la plateforme saas</strong><br/>
-    #     - Bullet points de la partie 3<br/>
-    #     - Bullet points de la partie 3<br/>
-    #     - Bullet points de la partie 3<br/>
-    #     <br/><strong>4 - L'orientation de la plateforme saas</strong><br/>
-    #     - Bullet points de la partie 4<br/>
-    #     - Bullet points de la partie 5<br/>
-    #     - Bullet points de la partie 4<br/>
-    #     <br/><strong>5 - Chercher un moyen de mettre en avant la plateforme saas</strong><br/>
-    #     - Bullet points de la partie 5<br/>
-    #     - Bullet points de la partie 5<br/>
-    #     - Bullet points de la partie 5><br/>
-    #     ...
-
-    #     # Fin de l'exemple.
-
-    #     Rappel: Avant chaque titre de chapitre, ajoutes ça '<br/><br/>' pour faire un saut de ligne en HTML.
-    #     Rappel aussi: saute bien les lignes entre les bullets points - ajoutes ça '<br/>' avant chaque '-'
-
-    #     Important: traduit la réponse finale en français.
-
-    #     Prends bien ton temps et traite bien CHAQUE chapitre du document.
-
-    #     USER_PROMPT:
-    #     Ceci est le user prompt {user_prompt}.
-    #     Si ce prompt vient ajouter des informations par rapport au context prompt, ajoutes les instructions de l'utilisateur aux instructions finales du prompt.
-    #   """
-    # )
 
     print(response)
 
