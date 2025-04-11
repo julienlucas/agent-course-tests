@@ -283,7 +283,7 @@ export default function Page() {
                 draggable="false"
               />
             </div>
-            <div className="relative mx-auto max-w-40 w-full h-8">
+            <div className="relative mx-auto max-w-44 w-full md:h-8 h-12">
               <Image
                 className=""
                 src="/logo-llama-index.webp"
