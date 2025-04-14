@@ -253,7 +253,7 @@ export default function Page() {
               <Image
                 className="-mt-2"
                 src="/logo-next.svg"
-                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                alt="Développement de saas MVP, IA création de saas, création d'agents IA, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
               />
@@ -262,7 +262,7 @@ export default function Page() {
               <Image
                 className="md:-ml-1 ml-0 md:mt-2 -mt-2"
                 src="/logo-tailwind.svg"
-                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                alt="Développement de saas MVP, IA création de saas, création d'agents IA, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
               />
@@ -271,7 +271,7 @@ export default function Page() {
               <Image
                 className="md:ml-4 ml-0"
                 src="/logo-pinecone.svg"
-                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                alt="Développement de saas MVP, IA création de saas, création d'agents IA, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
               />
@@ -280,7 +280,7 @@ export default function Page() {
               <Image
                 className=""
                 src="/logo-python.svg"
-                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                alt="Développement de saas MVP, IA création de saas, création d'agents IA, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
               />
@@ -289,7 +289,7 @@ export default function Page() {
               <Image
                 className=""
                 src="/logo-llama-index.webp"
-                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                alt="Développement de saas MVP, IA création de saas, création d'agents IA, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
               />
@@ -298,7 +298,7 @@ export default function Page() {
               <Image
                 className=""
                 src="/logo-mistral.svg"
-                alt="Développement de saas mvp, création de saas, développement d'application saas, création de mvp saas"
+                alt="Développement de saas MVP, IA création de saas, création d'agents IA, développement d'application saas, création de mvp saas"
                 fill
                 draggable="false"
               />

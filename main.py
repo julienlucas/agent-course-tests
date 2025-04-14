@@ -49,7 +49,7 @@ app = FastAPI()
 # Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://agent-course-tests-front-2.onrender.com",  "https://agent-ia-alfred.julienlucas.com/", "https://agent-course-tests-j4fw.vercel.app"],  # Autoriser le frontend en local
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://agent-course-tests-front-2.onrender.com",  "https://agent-ia-alfred.julienlucas.com", "https://agent-course-tests-j4fw.vercel.app"],  # Autoriser le frontend en local
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
