@@ -51,7 +51,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://agent-ia-alfred.julienlucas.com/", "https://agent-course-tests-j4fw.vercel.app"],  # Autoriser le frontend en local
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
