@@ -30,11 +30,11 @@ export default function Page() {
       setFirstSearch(true);
       const response = await fetch(BACKEND_AGENT_API_URL, {
         method: "POST",
-        mode: "cors",
         headers: {
-          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
-        body: formData
+        body: formData,
       });
       const textData = await response.text();
 
@@ -77,11 +77,11 @@ export default function Page() {
             </span>
           </h2>
           <h1 className="relative pt-2 text-3xl font-bold sm:text-4xl">
-            L'Agent RAG qui résume vos documents 👌
+            L'Agent RAG qui synthètise vos documents 👌
           </h1>
           <p className="mt-3 text-gray-600 dark:text-neutral-400">
-            Ajoutez un document PDF à résumer par l'IA, cliquez sur envoyer et
-            attendez max 10 secondes
+            Ajoutez un document PDF à synthètiser par l'IA, cliquez sur envoyer et
+            attendez 10-15 secondes
           </p>
         </div>
         {/* End Title */}

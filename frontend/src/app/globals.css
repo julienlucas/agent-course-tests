@@ -17,6 +17,7 @@
 
 body {
   font-family: Helvetica, sans-serif;
+  background: white;
 }
 
 @keyframes bouncing {

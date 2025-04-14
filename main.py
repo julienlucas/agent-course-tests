@@ -49,7 +49,7 @@ app = FastAPI()
 # Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Autoriser spécifiquement le frontend
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://agent-ia-alfred.julienlucas.com/"],  # Autoriser le frontend en local
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -148,7 +148,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
     # Query de l'Index
     response = await query_engine.aquery(
       f"""
-        Tu es un expert en lecture et synthèse de documents professionnels. Tu vas recevoir un texte extrait d’un document PDF.
+        Tu es un expert en lecture et synthèse de documents professionnels. Tu vas recevoir un texte extrait d'un document PDF.
         Ce texte peut contenir plusieurs chapitres, sections ou parties, et potentiellement être dense ou long.
 
         Ta mission est de synthétiser ce document de manière claire, complète et structurée. Pour cela :
@@ -156,8 +156,8 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
         1. Identifie les grandes parties ou chapitres du document (tu peux te baser sur les titres ou les changements de thématique).
         2. Pour chaque partie, rédige un résumé sous forme de bullet points.
         3. Utilise un langage clair, professionnel et accessible.
-        4. Ne laisse  \`aucune partie du document sans traitement\`.
-        5. Utilise \`jusqu’à 2000 mots\` si nécessaire pour garantir la richesse du résumé.
+        4. Ne laisse \`aucune partie du document sans traitement\`.
+        5. Utilise \`jusqu'à 2000 mots\` si nécessaire pour garantir la richesse du résumé..
 
         UTILISE TOUJOURS le format \`HTML\` suivant :
 
@@ -187,15 +187,12 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
         (...)
 
-        <br/><strong>Conclusion ou section finale (si elle existe)</strong><br/>
-        - [Bullet point final]<br/><br/>
-
-        FIN DE L'EXEMPLE.
-
         Règles supplémentaires :
         - Avant chaque titre de chapitre, ajoute un double saut de ligne `<br/><br/>`
+        - Après chaque titre de chapitre, n'oublie pas le saut de ligne à la fin du titre `<br/>`
         - Avant chaque bullet point, commence par un seul saut de ligne `<br/>-`
-        - N’invente rien. Ne comble pas les vides avec des hypothèses.
+        - Après chaque ligne où il y a un bullet point, n'oublie pas le saut de ligne à la fin `<br/>`
+        - N'invente rien. Ne comble pas les vides avec des hypothèses.
         - Si le document est désorganisé ou sans structure, regroupe les idées par thème logique.
 
         Important: traduit la réponse finale en français (et en conservant la règle du format HTML et des sauts de ligne).
