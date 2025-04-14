@@ -82,7 +82,7 @@ export default function Page() {
           </h1>
           <p className="mt-3 text-gray-600 dark:text-neutral-400">
             Ajoutez un document PDF à synthètiser par l'IA, cliquez sur envoyer et
-            attendez 10-15 secondes
+            attendez 10-20 secondes
           </p>
         </div>
         {/* End Title */}
