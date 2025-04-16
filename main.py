@@ -108,7 +108,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
     # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # Pipeline de chucking connecté à Pinecone
-    # embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
+    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
 
     embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=MISTRALAI_API_KEY)
 
@@ -157,7 +157,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
         2. Pour chaque partie, rédige un résumé sous forme de bullet points.
         3. Utilise un langage clair, professionnel et accessible.
         4. Ne laisse \`aucune partie du document sans traitement\`.
-        5. Utilise \`jusqu'à 2000 mots\` si nécessaire pour garantir la richesse du résumé..
+        5. Utilise \`jusqu'à 2000 caractères MAXIMUM\` si nécessaire pour garantir la richesse du résumé..
 
         UTILISE TOUJOURS le format \`HTML\` suivant :
 
@@ -195,8 +195,9 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
         - N'invente rien. Ne comble pas les vides avec des hypothèses.
         - Si le document est désorganisé ou sans structure, regroupe les idées par thème logique.
         - Traite bien le document EN ENTIER, CHAQUE PARTIE/CHAPITRE avant de répondre.
+        - Pour ta réponse utilise 2000 caractères MAXIMUM
 
-        Important: traduit ta réponse finale en français (et en conservant la règle du format HTML et des sauts de ligne).
+        Important AVANT DE RÉPONDRE si le texte N'EST PAS en français le texte de réponse EN FRANÇAIS (et en conservant la règle du format HTML et des sauts de ligne).
       """
     )
 
