@@ -194,8 +194,9 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
         - Après chaque ligne où il y a un bullet point, n'oublie pas le saut de ligne à la fin `<br/>`
         - N'invente rien. Ne comble pas les vides avec des hypothèses.
         - Si le document est désorganisé ou sans structure, regroupe les idées par thème logique.
+        - Traite bien le document EN ENTIER, CHAQUE PARTIE/CHAPITRE avant de répondre.
 
-        Important: traduit la réponse finale en français (et en conservant la règle du format HTML et des sauts de ligne).
+        Important: traduit ta réponse finale en français (et en conservant la règle du format HTML et des sauts de ligne).
       """
     )
 
