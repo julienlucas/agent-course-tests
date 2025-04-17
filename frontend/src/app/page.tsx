@@ -3,11 +3,12 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 
 export default function Page() {
-  const [responses, setResponses] = useState<any>("");
+  const [responses, setResponses] = useState<any>([]);
   const [file, setFile] = useState<File | null>(null);
   const [firstSearch, setFirstSearch] = useState<boolean>(false);
   const [search, setSearch] = useState<boolean>(false);
   const [hoverFile, setHoverFile] = useState<boolean>(false);
+  const [userPrompt, setUserPrompt] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -17,32 +18,33 @@ export default function Page() {
     setSearch(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("user_prompt", "Le résumé doit faire max 100mots");
-    let newReponses = [...responses];
-    // newReponses.unshift(file.name);
+    formData.append("user_prompt", userPrompt);
+    let newReponses;
 
     try {
       const BACKEND_AGENT_API_URL =
         process.env.NODE_ENV === "development"
-          ? "http://127.0.0.1:8000/"
-          : "https://agent-course-tests.onrender.com/";
+          ? process.env.NEXT_PUBLIC_BACKEND_AGENT_API_DEV_URL
+          : process.env.NEXT_PUBLIC_BACKEND_AGENT_API_PROD_URL;
+
+      if (!BACKEND_AGENT_API_URL) {
+        throw new Error("BACKEND_AGENT_API_URL n'est pas définie");
+      }
 
       setFirstSearch(true);
-      const response = await fetch(BACKEND_AGENT_API_URL, {
+      const response = await fetch(
+        BACKEND_AGENT_API_URL, {
         method: "POST",
-        // headers: {
-        //   mode: "cors",
-        //   "Access-Control-Allow-Origin": "*",
-        //   "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        // },
         body: formData,
       });
-      const textData = await response.text();
+      const json = await response.json();
 
       setSearch(false);
       setFile(null);
-      newReponses.unshift(textData);
-      setResponses(newReponses);
+      newReponses = [...responses];
+      newReponses.unshift(json);
+      console.log(newReponses);
+      setResponses([...newReponses]);
     } catch (error) {
       setSearch(false);
       setHoverFile(false);
@@ -62,27 +64,26 @@ export default function Page() {
       <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         {/* Title */}
         <div className="text-center">
-          <div className="flex justify-center">
-            <Image
-              src="/julien-lucas-b.jpg"
-              className="rounded-full text-center"
-              alt="Agent IA"
-              width={100}
-              height={100}
-              draggable="false"
-            />
-          </div>
-          <h2 className="relative pt-8 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
-            <span className="font-bold text-5xl py-0 pr-3 pl-1 rounded-[.4rem] italic bg-gradient-to-r from-slate-700 via-indigo-600 bg-clip-text to-violet-500 inline-block text-transparent">
-              Alfred
+          <h2 className="relative drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.2)] pt-16 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+            <span className="font-bold text-5xl py-1 pr-3 pl-1 rounded-[.4rem] italic bg-gradient-to-r inline-block">
+              Presidential Agent
             </span>
+            <div className="flex justify-center">
+              {" "}
+              <div className="w-2 h-2 bg-[#043ca9]" />
+              <div className="w-2 h-2 bg-white" />
+              <div className="w-2 h-2 bg-[#ec3c4c]" />
+            </div>
+            {/* <span className="font-bold text-5xl py-0 pr-3 pl-1 rounded-[.4rem] italic bg-gradient-to-r from-slate-700 via-indigo-600 bg-clip-text to-violet-500 inline-block text-transparent">
+              Alfred
+            </span> */}
           </h2>
-          <h1 className="relative pt-2 text-3xl font-bold sm:text-4xl">
+          <h1 className="relative pt-8 text-3xl font-bold sm:text-4xl">
             L'Agent RAG qui synthètise vos documents 👌
           </h1>
           <p className="mt-3 text-gray-600 dark:text-neutral-400">
-            Ajoutez un document PDF à synthètiser par l'IA, cliquez sur envoyer et
-            attendez 10-20 secondes
+            Ajoutez un document PDF à synthètiser par l'IA, cliquez sur envoyer
+            et attendez 10-20 secondes
           </p>
         </div>
         {/* End Title */}
@@ -130,8 +131,10 @@ export default function Page() {
               )}
               {/* Textarea */}
               <textarea
-                className="resize-none relative outline-none focus:outline-hidden p-4 sm:p-4 pb-[25px] sm:pb-[25px] block w-full border-gray-200 rounded-lg sm:text-lg font-medium disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500"
+                className="transition-all duration-100 resize-none relative outline-none focus:outline-hidden border-transparent border-3 focus:border-[#1e66d9] p-4 sm:p-4 pb-[25px] sm:pb-[25px] block w-full border-gray-200 rounded-lg sm:text-lg font-medium disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500"
                 placeholder="Par défaut le system prompt est configuré pour résumer"
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
               />
 
               {/* Toolbar */}
@@ -184,7 +187,7 @@ export default function Page() {
                       <button
                         type="button"
                         onClick={handleSubmit}
-                        className="font-bold transition-all duration-100 cursor-pointer px-2 py-1 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500"
+                        className="font-bold transition-all duration-100 cursor-pointer px-2 py-1 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-[#0843a1] hover:bg-[#1e66d9] focus:z-10 focus:outline-hidden focus:bg-[#1e66d9]"
                       >
                         Résumer
                         <svg
@@ -222,31 +225,42 @@ export default function Page() {
         )}
 
         {responses.length > 0 &&
-          responses.map((response: any, i: number) => (
-            <ul key={`${i}-reponse`} className="relative mt-4 mb-10 space-y-5">
-              {/* Chat Bubble */}
-              <li className="mt-4 mb-2 max-w-5xl ms-auto flex justify-start gap-x-2 sm:gap-x-4">
-                <div className="grow text-start space-y-3">
-                  {/* Card */}
-                  <div className="inline-block bg-blue-600 rounded-xl p-4 shadow-2xs bg-blue-600">
-                    <p
-                      className="text-sm text-white"
-                      dangerouslySetInnerHTML={{ __html: response }}
-                    />
-                  </div>
-                  {/* End Card */}
-                </div>
+          responses.map(
+            ({ text, wave }: { text: string; wave: string }, i: number) => (
+              <ul
+                key={`${i}-reponse`}
+                className="relative mt-4 mb-10 space-y-5"
+              >
+                {/* Chat Bubble */}
+                <li className="mt-4 mb-2 max-w-5xl ms-auto flex justify-start gap-x-2 sm:gap-x-4">
+                  <div className="grow text-start space-y-3">
+                    {/* Card */}
+                    <div className="inline-block bg-[#0843a1] rounded-xl p-4 shadow-2xs">
+                      {wave && (
+                        <audio controls src={`data:audio/wav;base64,${wave}`} />
+                      )}
 
-                <span className="inline-flex shrink-0 items-center justify-center size-9.5 rounded-full bg-slate-600">
-                  <span className="text-sm font-medium text-white">IA</span>
-                </span>
-              </li>
-              {/* End Chat Bubble */}
-            </ul>
-          ))}
+                      <p
+                        className="mt-4 text-sm text-white"
+                        dangerouslySetInnerHTML={{ __html: text }}
+                      />
+                    </div>
+                    {/* End Card */}
+                  </div>
+
+                  <span className="inline-flex shrink-0 items-center justify-center size-9.5 rounded-full bg-slate-600">
+                    <span className="text-sm font-medium text-white">IA</span>
+                  </span>
+                </li>
+                {/* End Chat Bubble */}
+              </ul>
+            )
+          )}
 
         <div className="max-w-2xl py-10 lg:py-14 mx-auto">
-          <p className="text-center">Réalisé avec</p>
+          <p className="text-center">
+            <strong>Réalisé avec</strong>
+          </p>
 
           <div className="mt-5 max-w-xl mx-auto md:flex grid md:grid-cols-6 grid-cols-1 gap-2 w-full">
             <div className="relative mx-auto w-40 w-full h-12">
@@ -308,7 +322,8 @@ export default function Page() {
           <p className="text-center">
             Vous êtes fondateur, une startup, et vous avez un projet à réaliser?
             <br />
-            Je réalise vos projets de MVP IA et saas vitesse éclair (moins d'1 mois). Intéréssé?
+            Je réalise vos projets de MVP IA et saas vitesse éclair (moins d'1
+            mois). Intéréssé?
           </p>
           <br />
           <div className="relative flex justify-center">
@@ -319,11 +334,21 @@ export default function Page() {
                   "_blank"
                 )
               }
-              className="font-bold transition-all duration-100 text-xl flex justify-center cursor-pointer px-5 py-4 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-hidden focus:bg-blue-500"
+              className="font-bold transition-all duration-100 text-xl flex justify-center cursor-pointer px-5 py-4 inline-flex shrink-0 justify-center items-center rounded-lg text-white bg-[#0843a1] hover:bg-[#1e66d9] focus:z-10 focus:outline-hidden focus:bg-[#1e66d9]"
             >
               Contactez-moi
             </button>
           </div>
+        </div>
+        <div className="flex justify-center">
+          <Image
+            src="/julien-lucas-b.jpg"
+            className="rounded-full text-center"
+            alt="Agent IA"
+            width={100}
+            height={100}
+            draggable="false"
+          />
         </div>
       </div>
       {/* End Content */}
