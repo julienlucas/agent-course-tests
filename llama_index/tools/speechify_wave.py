@@ -40,8 +40,8 @@ def speechify_wave(content: str) -> str:
       },
     }
 
-    response = requests.post(url_stream, headers=headers2, json=payload)
-    response_json = response.json()
+    response_wave = requests.post(url_stream, headers=headers2, json=payload)
+    response_json = response_wave.json()
 
     WAVE_DATA = response_json.get("audio_data")
 

@@ -105,44 +105,43 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     pinecone_index = pc.Index(index_name)
     namespace = file_name
+
+    # Initialisation de la Vector Database
     vector_store = PineconeVectorStore(pinecone_index=pinecone_index, namespace=namespace)
-    # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-    # Pipeline de chucking connecté à Pinecone
-    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
-
+    # Pipeline de Chucking connecté à Pinecone
+    # embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
     embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=MISTRALAI_API_KEY)
 
     pipeline = IngestionPipeline(
-        # transformations=[
-        #     SemanticSplitterNodeParser(
-        #         buffer_size=1,
-        #         breakpoint_percentile_threshold=95,
-        #         embed_model=embed_model,
-        #     ),
-        #     embed_model,
-        # ],
         transformations=[
-            MarkdownElementNodeParser(
-                num_workers=4,
+            SemanticSplitterNodeParser(
+                buffer_size=1,
+                breakpoint_percentile_threshold=95,
                 embed_model=embed_model,
             ),
             embed_model,
         ],
+        vector_store=vector_store
+        # transformations=[
+        #     MarkdownElementNodeParser(
+        #         num_workers=4,
+        #         embed_model=embed_model,
+        #     ),
+        #     embed_model,
+        # ],
         # transformations=[
         #   TokenTextSplitter(chunk_size=512, chunk_overlap=50),
         #   embed_model,
         # ],
-        vector_store=vector_store
     )
 
     await pipeline.arun(documents=document)
 
-    # Récupération du VectorStoreIndex
-    # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+    # Instanciation de l'Index de la Vector Database
     index = VectorStoreIndex.from_documents(documents=document)
 
-    # Utilisation du retriever (retourne les 5 meilleurs résultats)
+    # Récupération (retournera les 3 meilleurs résultats - avec l'algo ANN)
     retriever = VectorIndexRetriever(index=index, similarity_top_k=3)
     query_engine = RetrieverQueryEngine(retriever=retriever)
 
