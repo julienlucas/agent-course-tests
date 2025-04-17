@@ -61,7 +61,7 @@ export default function Page() {
 
   return (
     <main className="px-4 w-full">
-      <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <div className="max-w-[1400px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         {/* Title */}
         <div className="text-center">
           <h2 className="relative drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.2)] pt-16 text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
@@ -79,7 +79,7 @@ export default function Page() {
             </span> */}
           </h2>
           <h1 className="relative pt-8 text-3xl font-bold sm:text-4xl">
-            L'Agent RAG qui synthètise vos documents 👌
+            L'Agent RAG qui synthètise et vous lit vos documents 👌
           </h1>
           <p className="mt-3 text-gray-600 dark:text-neutral-400">
             Ajoutez un document PDF à synthètiser par l'IA, cliquez sur envoyer
