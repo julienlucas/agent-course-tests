@@ -93,7 +93,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
     if index_name not in existing_indexes:
       pc.create_index(
           name=index_name,
-          dimension=1024, # Dimension pour LLM MistralAI (ChatGPT: 1536)
+          dimension=1536, # Dimension pour LLM MistralAI (ChatGPT: 1536)
           metric="cosine",
           spec=ServerlessSpec(
               cloud="aws",
