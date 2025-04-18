@@ -26,7 +26,6 @@ mistralai = "^1.7.0"
 pinecone = "^6.0.2"
 langfuse = "^2.60.3"
 asyncio = "^3.4.3"
-requests = "^2.32.3"
 
 [build-system]
 requires = ["poetry-core"]
