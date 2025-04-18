@@ -219,7 +219,8 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     print(response)
 
-    wave_data = await speechify_wave(response)
+    cleaned_content = str(response).replace('<br/>', '\n').replace('<strong>', '').replace('</strong>', '')
+    wave_data = await speechify_wave(cleaned_content)
 
     try:
         response_text = str(response)

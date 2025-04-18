@@ -26,8 +26,6 @@ async def speechify_wave(content: str) -> str:
                 access_token = auth_json.get("access_token")
                 print(access_token)
 
-            cleaned_content = await str(content).replace('<br/>', '\n').replace('<strong>', '').replace('</strong>', '')
-
             # Génération de l'audio
             speech_url = "https://api.sws.speechify.com/v1/audio/speech"
             speech_headers = {
@@ -35,7 +33,7 @@ async def speechify_wave(content: str) -> str:
                 "Content-Type": "application/json"
             }
             payload = {
-                "input": f"Cher compatriote, {cleaned_content} Vive la République et Vive la France.",
+                "input": f"Cher compatriote, {content} Vive la République et Vive la France.",
                 "voice_id": "3448f188-b84b-4242-a905-d6e0a203b941",
                 "language": "fr-FR",
                 "model": "simba-multilingual",
