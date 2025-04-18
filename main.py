@@ -53,7 +53,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@observe()
+# @observe()
 async def process_documents(file_name: str, file_content: bytes, user_prompt: str):
     # Lecture des documents dans répertoire
     # reader = SimpleDirectoryReader(input_dir="documents")
@@ -219,12 +219,9 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     print(response)
 
-    wave_data = speechify_wave(response)
+    wave_data = await speechify_wave(response)
 
     try:
-        if not response or not str(response).strip():
-            raise ValueError("Le LLM n'a pas généré de réponse valide")
-
         response_text = str(response)
         formatted_text_response = response_text.replace(".-", ".\n-")
         response_data = {
@@ -234,8 +231,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
         yield json.dumps(response_data).encode()
 
     except Exception as e:
-        print(f"Erreur lors du traitement: {str(e)}")
-        error_message = f"Erreur lors du traitement du document: {str(e)}"
+        error_message = str(e)
         yield error_message.encode()
 
 @app.post("/")
