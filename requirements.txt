@@ -4,7 +4,7 @@ pydantic
 chromadb
 langfuse
 fitz
-requests
+aiohttp
 pymupdf
 tools
 python-multipart

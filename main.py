@@ -110,8 +110,8 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
     vector_store = PineconeVectorStore(pinecone_index=pinecone_index, namespace=namespace)
 
     # Pipeline de Chucking connecté à Pinecone
-    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY, temperature=0.7)
-    # embed_model = MistralAIEmbedding(model_name='mistral-embed', temperature=0.7, api_key=MISTRALAI_API_KEY)
+    # embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY, temperature=0.7)
+    embed_model = MistralAIEmbedding(model_name='mistral-embed', temperature=0.7, api_key=MISTRALAI_API_KEY)
 
     pipeline = IngestionPipeline(
         transformations=[
@@ -167,7 +167,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
       3. Et ajoutes pour chaque partie éventuellement quelque bullets points très court.
       4. Utilise un style **professionnel, clair et accessible**, sans jargon inutile.
       5. N’invente rien. Si une partie est floue, résume ce qui est dit sans extrapoler.
-      6. Ta réponse complète ne doit pas dépasser 3000 caractères, sauf si vraiment nécessaire pour bien restituer toutes les sections.
+      6. Ta réponse complète ne doit pas dépasser 2000 caractères, sauf si vraiment nécessaire pour bien restituer toutes les sections.
       7. Si le document n’a pas de structure claire, regroupe les idées par thématiques logiques.
       8. Et va bien jusqu'au bout du document, traite TOUS LES CHAPITRES ET LES PARTIES.
 
