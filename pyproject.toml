@@ -6,7 +6,7 @@ authors = ["julienlucas <contact@julienlucas.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.13"
 dotenv = "^0.9.9"
 pymupdf = "^1.25.5"
 pydantic = "^2.11.3"
