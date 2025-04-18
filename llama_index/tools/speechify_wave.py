@@ -24,7 +24,7 @@ async def speechify_wave(content: str) -> str:
                 auth_json = await auth_response.json()
 
                 access_token = auth_json.get("access_token")
-                # print(access_token)
+                print(access_token)
 
             cleaned_content = str(content).replace('<br/>', '\n').replace('<strong>', '').replace('</strong>', '')
 
@@ -48,6 +48,7 @@ async def speechify_wave(content: str) -> str:
             # Deuxième requête pour la génération audio
             async with session.post(speech_url, headers=speech_headers, json=payload) as speech_response:
                 response_data = await speech_response.json()
+                print(response_data)
 
                 return response_data.get("audio_data")
 
