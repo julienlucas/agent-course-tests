@@ -219,7 +219,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     print(response)
 
-    wave_data = await speechify_wave(content)
+    wave_data = await speechify_wave(response)
 
     try:
         response_text = str(response)
