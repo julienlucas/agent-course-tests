@@ -10,6 +10,7 @@
 /llama_index/__pycache__
 /lang_graph/__pycache__
 /alfred_chroma_db
+/.venv
 /venv
 /path
 /__pycache__

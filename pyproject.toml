@@ -1,0 +1,42 @@
+[project]
+name = "agent-ia"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "julienlucas",email = "contact@julienlucas.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<3.12.9"
+dependencies = [
+    "dotenv (>=0.9.9,<0.10.0)",
+    "pymupdf (>=1.25.5,<2.0.0)",
+    "pydantic (>=2.11.3,<3.0.0)",
+    "aiohttp (>=3.11.16,<4.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "llama-index (>=0.12.31,<0.13.0)",
+    "llama-index-core (>=0.12.31,<0.13.0)",
+    "llama-index-callbacks-arize-phoenix (>=0.5.1,<0.6.0)",
+    "llama-index-vector-stores-pinecone (>=0.4.5,<0.5.0)",
+    "llama-index-tools-google (>=0.3.0,<0.4.0)",
+    "llama-index-readers-file (>=0.4.7,<0.5.0)",
+    "llama-index-llms-huggingface-api (>=0.4.1,<0.5.0)",
+    "llama-index-vector-stores-chroma (>=0.4.1,<0.5.0)",
+    "llama-index-embeddings-huggingface-api (>=0.3.0,<0.4.0)",
+    "llama-index-embeddings-mistralai (>=0.3.0,<0.4.0)",
+    "llama-index-llms-mistralai (>=0.4.0,<0.5.0)",
+    "mistralai (>=1.7.0,<2.0.0)",
+    "pinecone (>=6.0.2,<7.0.0)",
+    "langfuse (>=2.60.3,<3.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "nltk (>=3.8.1,<4.0.0)",
+    "certifi (>=2024.2.2,<2025.0.0)",
+    "speechify (>=0.0.0,<0.0.1)",
+    "speechify-api (>=1.2.0,<2.0.0)"
+]
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

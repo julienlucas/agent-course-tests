@@ -1,6 +1,5 @@
 import os
 import re
-import fitz
 import pymupdf
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, UploadFile
@@ -30,7 +29,7 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
-from llama_index.llms.mistralai import MistralAI
+
 from llama_index.embeddings.mistralai import MistralAIEmbedding
 
 from pinecone import Pinecone, ServerlessSpec
@@ -164,12 +163,12 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
       2. Pour chaque partie, rédige un **court résumé de 3 lignes maximum**, avec des phrases complètes.
       3. Et ajoutes pour chaque partie éventuellement quelque bullets points très court.
       4. Utilise un style **professionnel, clair et accessible**, sans jargon inutile.
-      5. N’invente rien. Si une partie est floue, résume ce qui est dit sans extrapoler.
-      6. Ta réponse complète ne doit pas dépasser 2000 caractères, sauf si vraiment nécessaire pour bien restituer toutes les sections.
-      7. Si le document n’a pas de structure claire, regroupe les idées par thématiques logiques.
+      5. N'invente rien. Si une partie est floue, résume ce qui est dit sans extrapoler.
+      6. Ta réponse complète ne doit pas dépasser 3000 caractères, sauf si vraiment nécessaire pour bien restituer toutes les sections.
+      7. Si le document n'a pas de structure claire, regroupe les idées par thématiques logiques.
       8. Et va bien jusqu'au bout du document, traite TOUS LES CHAPITRES ET LES PARTIES.
 
-      UTILISE TOUJOURS le format \`HTML\` suivant :
+      UTILISE TOUJOURS le format HTML suivant :
 
       <strong>Indiques le titre du document</strong><br/><br/>
       <br/><br/>
@@ -206,7 +205,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
       - N'oublie pas chaque bullet point commence par `<br/>-` et se termine par `<br/>`
 
       IMPORTANT :
-      - TA RÉPONSE DOIT ÊTRE ENTIÈREMENT EN FRANÇAIS, MÊME SI LE TEXTE ORIGINAL NE L’EST PAS.
+      - TA RÉPONSE DOIT ÊTRE ENTIÈREMENT EN FRANÇAIS, MÊME SI LE TEXTE ORIGINAL NE L'EST PAS.
       - Traduis tous les titres, contenus, et bullet points en français dans ta réponse finale.
       - Respecte toujours le format HTML précisé ci-dessous.
     """
