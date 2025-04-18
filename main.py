@@ -110,8 +110,8 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
     vector_store = PineconeVectorStore(pinecone_index=pinecone_index, namespace=namespace)
 
     # Pipeline de Chucking connecté à Pinecone
-    # embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY)
-    embed_model = MistralAIEmbedding(model_name='mistral-embed', api_key=MISTRALAI_API_KEY)
+    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY, temperature=0.7)
+    # embed_model = MistralAIEmbedding(model_name='mistral-embed', temperature=0.7, api_key=MISTRALAI_API_KEY)
 
     pipeline = IngestionPipeline(
         transformations=[
@@ -160,53 +160,57 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     system_prompt = """
       Tu es un expert en lecture et synthèse de documents professionnels. Tu vas recevoir un texte extrait d'un document PDF.
-      Ce texte peut contenir plusieurs chapitres, sections ou parties, et potentiellement être dense ou long.
-
-      Ta mission est de synthétiser ce document de manière claire, complète et structurée. Pour cela :
+      Ce texte peut contenir plusieurs chapitres, sections ou parties, et potentiellement être dense ou long. Pour cela :
 
       1. Identifie les grandes parties ou chapitres du document (tu peux te baser sur les titres ou les changements de thématique).
-      2. Pour chaque partie, rédige un résumé sous forme de bullet points.
-      3. Utilise un langage clair, professionnel et accessible.
-      4. Ne laisse \`aucune partie du document sans traitement\`.
-      5. Utilise \`jusqu'à 2000 caractères MAXIMUM\` si nécessaire pour garantir la richesse du résumé..
+      2. Pour chaque partie, rédige un **court résumé de 3 lignes maximum**, avec des phrases complètes.
+      3. Et ajoutes pour chaque partie éventuellement quelque bullets points très court.
+      4. Utilise un style **professionnel, clair et accessible**, sans jargon inutile.
+      5. N’invente rien. Si une partie est floue, résume ce qui est dit sans extrapoler.
+      6. Ta réponse complète ne doit pas dépasser 3000 caractères, sauf si vraiment nécessaire pour bien restituer toutes les sections.
+      7. Si le document n’a pas de structure claire, regroupe les idées par thématiques logiques.
+      8. Et va bien jusqu'au bout du document, traite TOUS LES CHAPITRES ET LES PARTIES.
 
       UTILISE TOUJOURS le format \`HTML\` suivant :
 
-      <strong>Indiques le titre du document</strong>
+      <strong>Indiques le titre du document</strong><br/><br/>
       <br/><br/>
-      <strong>1 - Titre de la partie 1</strong><br/>
-      Les relations entre les entreprises et les clients<br/>
-      - Bullet points de la partie 1<br/>
-      - Bullet points de la partie 1<br/>
-      - Bullet points de la partie 1<br/>
-      <br/><strong>2 - Le potentiel de la plateforme saas</strong><br/>
-      - Bullet points de la partie 2<br/>
-      - Bullet points de la partie 2<br/>
-      - Bullet points de la partie 2<br/>
-      <br/><strong>3 - L'idéal pour la plateforme saas</strong><br/>
-      - Bullet points de la partie 3<br/>
-      - Bullet points de la partie 3<br/>
-      - Bullet points de la partie 3<br/>
-      <br/><strong>4 - L'orientation de la plateforme saas</strong><br/>
-      - Bullet points de la partie 4<br/>
-      - Bullet points de la partie 5<br/>
-      - Bullet points de la partie 4<br/>
-      <br/><strong>5 - Chercher un moyen de mettre en avant la plateforme saas</strong><br/>
-      - Bullet points de la partie 5<br/>
-      - Bullet points de la partie 5<br/>
-      - Bullet points de la partie 5><br/>
+      <strong>1 - Titre de la première partie</strong><br/>
+      Ligne 1 du résumé de la première partie<br/>
+      Ligne 2 du résumé de la première partie<br/>
+      Ligne 3 du résumé de la première partie<br/><br/>
+      - Bullet point de la partie 1<br/>
+      - Bullet point de la partie 1<br/>
+      - Bullet point de la partie 1<br/><br/>
 
+      <strong>2 - Titre de la deuxième partie</strong><br/>
+      Ligne 1 du résumé de la deuxième partie<br/>
+      Ligne 2 du résumé de la deuxième partie<br/>
+      Ligne 3 du résumé de la deuxième partie<br/>
+      - Bullet point de la partie 1<br/>
+      - Bullet point de la partie 1<br/>
+      - Bullet point de la partie 1<br/><br/>
+
+      <strong>3 - Titre de la troisième partie</strong><br/>
+      Ligne 1 du résumé de la troisième partie<br/>
+      Ligne 2 du résumé de la troisième partie<br/>
+      Ligne 3 du résumé de la troisième partie<br/>
+      - Bullet point de la partie 1<br/>
+      - Bullet point de la partie 1<br/>
+      - Bullet point de la partie 1<br/><br/>
       (...)
 
       Règles supplémentaires :
-      - Avant chaque titre de chapitre, ajoute un double saut de ligne `<br/><br/>`
-      - Après chaque titre de chapitre, n'oublie pas le saut de ligne à la fin du titre `<br/>`
-      - Avant chaque bullet point, commence par un seul saut de ligne `<br/>-`
-      - Après chaque ligne où il y a un bullet point, n'oublie pas le saut de ligne à la fin `<br/>`
       - N'invente rien. Ne comble pas les vides avec des hypothèses.
       - Si le document est désorganisé ou sans structure, regroupe les idées par thème logique.
+      - N'oublie pas avant chaque titre de chapitre d'ajouter un double saut de ligne `<br/><br/>`
+      - N'oublie pas après chaque titre de chapitre d'ajouter un saut de ligne `<br/>`
+      - N'oublie pas chaque bullet point commence par `<br/>-` et se termine par `<br/>`
 
-      Important AVANT DE RÉPONDRE si le texte N'EST PAS en français le texte de réponse EN FRANÇAIS (et en conservant la règle du format HTML et des sauts de ligne).
+      IMPORTANT :
+      - TA RÉPONSE DOIT ÊTRE ENTIÈREMENT EN FRANÇAIS, MÊME SI LE TEXTE ORIGINAL NE L’EST PAS.
+      - Traduis tous les titres, contenus, et bullet points en français dans ta réponse finale.
+      - Respecte toujours le format HTML précisé ci-dessous.
     """
 
     fmt_prompt = prompt_tmpl.format(
