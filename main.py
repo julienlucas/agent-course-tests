@@ -1,12 +1,13 @@
 import os
 import re
 import pymupdf
+import json
 from dotenv import load_dotenv
+
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
-import json
 
 from llama_index.core import (
     SimpleDirectoryReader,
@@ -29,7 +30,6 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
-
 from llama_index.embeddings.mistralai import MistralAIEmbedding
 
 from pinecone import Pinecone, ServerlessSpec
