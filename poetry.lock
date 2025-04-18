@@ -4005,45 +4005,6 @@ files = [
 ]
 
 [[package]]
-name = "speechify"
-version = "0.0.0"
-description = "Unofficial speechify TTS module"
-optional = false
-python-versions = "~=3.9"
-files = [
-    {file = "speechify-0.0.0-py3-none-any.whl", hash = "sha256:302ba43f216ef8b7fa46c3e350a6b6468c2955c6aace11aef34c305bd17161e6"},
-    {file = "speechify-0.0.0.tar.gz", hash = "sha256:8fa57c7a3c20a1fef04adf5d81f568f82bf9538436208206087158a5e9de9fa1"},
-]
-
-[package.dependencies]
-certifi = "2024.6.2"
-charset-normalizer = "3.3.2"
-idna = "3.7"
-requests = "2.32.3"
-tabulate = "0.9.0"
-urllib3 = "2.2.2"
-
-[package.extras]
-dev = ["Sphinx", "setuptools", "twine", "wheel"]
-
-[[package]]
-name = "speechify-api"
-version = "1.2.0"
-description = "Official Speechify API SDK"
-optional = false
-python-versions = "<4.0,>=3.8"
-files = [
-    {file = "speechify_api-1.2.0-py3-none-any.whl", hash = "sha256:c518655994e9af1074d884de49fda3e126b6fe469c32f2dfd2769bde2297eb5b"},
-    {file = "speechify_api-1.2.0.tar.gz", hash = "sha256:0ff6825b5d249764e6b3ea2c369fb13dbf7e274ef9cdf36abf515fb4bf607971"},
-]
-
-[package.dependencies]
-httpx = ">=0.21.2"
-pydantic = ">=1.9.2"
-pydantic-core = ">=2.18.2,<3.0.0"
-typing_extensions = ">=4.0.0"
-
-[[package]]
 name = "sqlalchemy"
 version = "2.0.40"
 description = "Database Abstraction Library"
@@ -4182,20 +4143,6 @@ mpmath = ">=1.1.0,<1.4"
 
 [package.extras]
 dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
-
-[[package]]
-name = "tabulate"
-version = "0.9.0"
-description = "Pretty-print tabular data"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
-    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
-]
-
-[package.extras]
-widechars = ["wcwidth"]
 
 [[package]]
 name = "tenacity"
@@ -4889,4 +4836,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "77371ea48259cc71346ed352f264b0521d9f8e29b015261a8dcb046c99119f62"
+content-hash = "819d262ee2c00b2a8f645f962ba3b98eead503c483c79e6a536a435604ad576f"
