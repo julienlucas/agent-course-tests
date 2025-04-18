@@ -25,9 +25,7 @@ llama-index-llms-mistralai = "^0.4.0"
 mistralai = "^1.7.0"
 pinecone = "^6.0.2"
 langfuse = "^2.60.3"
-requests = "^2.32.3"
-speechify = "^0.0.0"
-speechify-api = "^1.2.0"
+asyncio = "^3.4.3"
 
 [build-system]
 requires = ["poetry-core"]

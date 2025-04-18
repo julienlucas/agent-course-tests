@@ -237,12 +237,6 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 @app.post("/")
 async def analyze_cv(file: UploadFile = File(...), user_prompt: str = Form(...)):
     try:
-        if not file.filename.endswith('.pdf'):
-            raise HTTPException(
-                status_code=400,
-                detail="Le fichier doit être au format PDF"
-            )
-
         file_content = await file.read()
         file_name = re.sub(r'[^A-Za-z0-9]+', '-', file.filename).lower()[:45]
 
