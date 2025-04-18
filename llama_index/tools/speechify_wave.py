@@ -23,6 +23,8 @@ async def speechify_wave(content: str) -> str:
             async with session.post(auth_url, headers=auth_headers, data=auth_data) as auth_response:
                 auth_json = await auth_response.json()
 
+                print(auth_json)
+
                 access_token = auth_json.get("access_token")
                 print(access_token)
 
