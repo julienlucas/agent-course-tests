@@ -24,9 +24,11 @@ async def speechify_wave(content: str) -> str:
                 auth_json = await response.json()
 
                 access_token = auth_json.get("access_token")
+                print(access_token)
 
             # Génération de l'audio
             cleaned_content = str(content).replace('<br/>', '\n').replace('<strong>', '').replace('</strong>', '')
+            print(cleaned_content)
 
             speech_url = "https://api.sws.speechify.com/v1/audio/speech"
             speech_headers = {
