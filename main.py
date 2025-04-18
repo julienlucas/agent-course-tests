@@ -30,14 +30,12 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.huggingface_api import HuggingFaceInferenceAPIEmbedding
 from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
-
 from llama_index.llms.mistralai import MistralAI
 from llama_index.embeddings.mistralai import MistralAIEmbedding
 
 from pinecone import Pinecone, ServerlessSpec
 from langfuse.decorators import observe
 
-from llama_index.tools.clean_up_text import clean_up_text
 from llama_index.tools.speechify_wave import speechify_wave
 
 load_dotenv()
@@ -110,8 +108,8 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
     vector_store = PineconeVectorStore(pinecone_index=pinecone_index, namespace=namespace)
 
     # Pipeline de Chucking connecté à Pinecone
-    # embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY, temperature=0.7)
-    embed_model = MistralAIEmbedding(model_name='mistral-embed', temperature=0.7, api_key=MISTRALAI_API_KEY)
+    embed_model = OpenAIEmbedding(api_key=OPENAI_API_KEY, temperature=0.7)
+    # embed_model = MistralAIEmbedding(model_name='mistral-embed', temperature=0.7, api_key=MISTRALAI_API_KEY)
 
     pipeline = IngestionPipeline(
         transformations=[
