@@ -12,7 +12,6 @@ from fastapi.exceptions import HTTPException
 from llama_index.core import (
     SimpleDirectoryReader,
     VectorStoreIndex,
-    StorageContext,
     Document
 )
 from llama_index.core.node_parser import (
@@ -44,7 +43,7 @@ MISTRALAI_API_KEY = os.getenv("MISTRALAI_API_KEY")
 
 app = FastAPI()
 
-# Configuration CORS
+# Configuration des URL autorisées pour CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://agent-course-tests-front-2.onrender.com",  "https://agent-ia-alfred.julienlucas.com", "https://agent-course-tests-j4fw.vercel.app"],  # Autoriser le frontend en local
@@ -55,15 +54,16 @@ app.add_middleware(
 
 # @observe()
 async def process_documents(file_name: str, file_content: bytes, user_prompt: str):
-    # Lecture des documents dans répertoire
+    # Lecture de document(s) depuis un répertoire
     # reader = SimpleDirectoryReader(input_dir="documents")
     # documents = reader.load_data()
 
-    # From URL
+    # Lecture de document depuis une URL
     # response = requests.get('https://raw.githubusercontent.com/run-llama/llama_index/main/docs/docs/examples/data/paul_graham/paul_graham_essay.txt')
     # text = response.text
     # documents = [Document(text=text)]
 
+    # Lecture de document depuis un fichier PDF uploadé
     pdf = pymupdf.open(stream=file_content, filetype="pdf")
 
     all_text = ""
@@ -72,7 +72,7 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     document = [Document(text=all_text)]
 
-    # Base de données Pinecone (pour la production et le scalage)
+    # Base de données Pinecone (Pincone pour la production et le scalage)
     pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
     index_name = 'demo-agent-ia'
     existing_indexes = [i.get('name') for i in pc.list_indexes()]
@@ -216,9 +216,9 @@ async def process_documents(file_name: str, file_content: bytes, user_prompt: st
 
     # Query de l'Index
     response = await query_engine.aquery(fmt_prompt)
-
     print(response)
 
+    # Génération de l'audio
     wave_data = await speechify_wave(response)
 
     try:

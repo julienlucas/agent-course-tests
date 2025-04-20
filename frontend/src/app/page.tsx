@@ -5,7 +5,6 @@ import Image from "next/image";
 export default function Page() {
   const [responses, setResponses] = useState<any>([]);
   const [file, setFile] = useState<File | null>(null);
-  const [firstSearch, setFirstSearch] = useState<boolean>(false);
   const [search, setSearch] = useState<boolean>(false);
   const [hoverFile, setHoverFile] = useState<boolean>(false);
   const [userPrompt, setUserPrompt] = useState<string>("");
@@ -31,7 +30,6 @@ export default function Page() {
         throw new Error("BACKEND_AGENT_API_URL n'est pas définie");
       }
 
-      setFirstSearch(true);
       const response = await fetch(
         BACKEND_AGENT_API_URL, {
         method: "POST",
@@ -39,11 +37,10 @@ export default function Page() {
       });
       const json = await response.json();
 
-      setSearch(false);
-      setFile(null);
       newReponses = [...responses];
       newReponses.unshift(json);
-      console.log(newReponses);
+      setSearch(false);
+      setFile(null);
       setResponses([...newReponses]);
     } catch (error) {
       setSearch(false);
