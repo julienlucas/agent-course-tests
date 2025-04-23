@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alfred - L'agent IA qui synthètise vos documents",
+  title: "Presidential Agent - L'agent IA qui synthètise et lit vos documents",
   description: "Résumez vos documents PDF en 20 secondes max",
 };
 
